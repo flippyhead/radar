@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    {
+      "name": "workflow-analyst",
+      "description": "Analyze your Claude Code session history to surface workflow insights, underused features, anti-patterns, ecosystem recommendations, and automation opportunities.",
+      "source": "./"
+    }
+  ]
+}

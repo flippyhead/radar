@@ -1,0 +1,6 @@
+{"display":"Read the config file","pastedContents":{},"timestamp":1741000000000,"project":"/Users/test/project-a","sessionId":"s1"}
+{"display":"Run the tests","pastedContents":{},"timestamp":1741000100000,"project":"/Users/test/project-a","sessionId":"s1"}
+{"display":"Run the tests","pastedContents":{},"timestamp":1741000200000,"project":"/Users/test/project-b","sessionId":"s2"}
+{"display":"Run the tests","pastedContents":{},"timestamp":1741000300000,"project":"/Users/test/project-a","sessionId":"s3"}
+{"display":"/commit","pastedContents":{},"timestamp":1741000400000,"project":"/Users/test/project-a","sessionId":"s3"}
+{"display":"/commit","pastedContents":{},"timestamp":1741000500000,"project":"/Users/test/project-b","sessionId":"s4"}

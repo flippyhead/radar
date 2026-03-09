@@ -1,0 +1,19 @@
+{
+  "name": "workflow-analyst",
+  "description": "Analyze your Claude Code session history to surface workflow insights, underused features, anti-patterns, ecosystem recommendations, and automation opportunities.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Peter Brown",
+    "url": "https://ptb.io"
+  },
+  "repository": "https://github.com/flippyhead/claude-workflow-analyst",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "analytics",
+    "insights",
+    "productivity",
+    "plugins",
+    "ecosystem"
+  ]
+}
