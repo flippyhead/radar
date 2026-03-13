@@ -10,7 +10,7 @@
     {
       "name": "workflow-analyst",
       "description": "Analyze your Claude Code session history to surface workflow insights, underused features, anti-patterns, ecosystem recommendations, and automation opportunities.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "Peter Brown",
         "email": "peter@wagglelabs.com"
