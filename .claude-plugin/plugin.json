@@ -1,19 +1,11 @@
 {
-  "name": "workflow-analyst",
-  "description": "Analyze your Claude Code and Cowork session history to surface actionable workflow insights — root cause diagnosis, automation opportunities, goal alignment, and knowledge management.",
+  "name": "claude-workflow-analyst",
+  "description": "AI Brain toolkit and workflow analysis for Claude Code and Cowork",
   "version": "2.0.0",
   "author": {
     "name": "Peter Brown",
     "url": "https://ptb.io"
   },
   "repository": "https://github.com/flippyhead/claude-workflow-analyst",
-  "license": "MIT",
-  "keywords": [
-    "workflow",
-    "analytics",
-    "insights",
-    "productivity",
-    "plugins",
-    "ecosystem"
-  ]
+  "license": "MIT"
 }

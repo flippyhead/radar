@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "claude-workflow-analyst",
-  "description": "Analyze Claude Code and Cowork session history for actionable workflow insights — failure diagnosis, automation, goal alignment, and knowledge management",
+  "description": "AI Brain toolkit and workflow analysis for Claude Code and Cowork",
   "owner": {
     "name": "Peter Brown",
     "email": "peter@wagglelabs.com"
@@ -9,13 +9,17 @@
   "plugins": [
     {
       "name": "workflow-analyst",
-      "description": "Analyze your Claude Code and Cowork session history to surface actionable workflow insights — root cause diagnosis, automation opportunities, goal alignment, and knowledge management.",
+      "description": "Analyze your Claude Code and Cowork session history to surface actionable workflow insights.",
       "version": "2.0.0",
-      "author": {
-        "name": "Peter Brown",
-        "email": "peter@wagglelabs.com"
-      },
-      "source": "./"
+      "author": { "name": "Peter Brown" },
+      "source": "./plugins/workflow-analyst"
+    },
+    {
+      "name": "open-brain",
+      "description": "Your personal AI memory layer — zero-input onboarding, project sync, and weekly reviews powered by Open Brain.",
+      "version": "1.0.0",
+      "author": { "name": "Peter Brown" },
+      "source": "./plugins/open-brain"
     }
   ]
 }
