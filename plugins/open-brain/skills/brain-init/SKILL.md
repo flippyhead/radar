@@ -9,13 +9,13 @@ Bootstrap your Open Brain by automatically discovering what tools you have conne
 
 ## Prerequisites
 
-The Open Brain connector must be available. If `capture_thought` and `search_thoughts` MCP tools are not available, stop and tell the user to connect Open Brain first.
+The Open Brain connector must be available. If `mcp__ai-brain__capture_thought` and `mcp__ai-brain__search_thoughts` MCP tools are not available, stop and tell the user to connect Open Brain first.
 
 ## Workflow
 
 ### Step 1: Check Brain Status
 
-Call `get_stats` to see if the brain already has content.
+Call `mcp__ai-brain__get_stats` to see if the brain already has content.
 
 - If the brain has thoughts, tell the user: "Your brain already has [N] thoughts. Running brain-init will add new knowledge without duplicating what's already there. Proceeding..."
 - If the brain is empty, tell the user: "Setting up your Open Brain for the first time. I'll scan your connected tools and build your knowledge base automatically."
@@ -93,7 +93,7 @@ Use the answers as the basis for Step 6 instead of connector data.
 
 ### Step 6: Synthesize and Save
 
-Consolidate all sources into focused brain thoughts. Before saving each thought, call `search_thoughts` with the topic to check for duplicates.
+Consolidate all sources into focused brain thoughts. Before saving each thought, call `mcp__ai-brain__search_thoughts` with the topic to check for duplicates.
 
 **Thoughts to create:**
 
@@ -109,9 +109,9 @@ Consolidate all sources into focused brain thoughts. Before saving each thought,
 4. **Work patterns** — Meeting rhythm, schedule patterns, preferences.
    Format: "Work patterns: [recurring meetings]. Typical schedule: [if determinable]. Preferences: [from CLAUDE.md or inferred]."
 
-Save each via `capture_thought`.
+Save each via `mcp__ai-brain__capture_thought`.
 
-**Additionally:** If enough signal exists to identify project priorities, create a pinned goal list via `create_list` with the top projects, then call `update_list` to pin it.
+**Additionally:** If enough signal exists to identify project priorities, create a pinned goal list via `mcp__ai-brain__create_list` with the top projects, then call `mcp__ai-brain__update_list` to pin it.
 
 ### Step 7: Report
 

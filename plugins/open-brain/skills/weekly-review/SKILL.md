@@ -14,16 +14,16 @@ A weekly synthesis that cross-references your brain thoughts, workflow insights,
 Collect from the brain using MCP tools. Each source is optional — work with whatever is available.
 
 **Recent thoughts:**
-Call `browse_recent` to get thoughts from the past 7 days.
+Call `mcp__ai-brain__browse_recent` to get thoughts from the past 7 days.
 
 **Workflow insights:**
-Call `get_insights` with `status: "new"` and then `status: "noted"` to get unresolved workflow insights. If the `get_insights` tool is unavailable (workflow-analyst plugin not installed), note this and skip insight-dependent sections.
+Call `mcp__ai-brain__get_insights` with `status: "new"` and then `status: "noted"` to get unresolved workflow insights. If the `mcp__ai-brain__get_insights` tool is unavailable (workflow-analyst plugin not installed), note this and skip insight-dependent sections.
 
 **Goals and priorities:**
-Call `get_lists` with `pinned: true` to get the user's stated goals and priorities.
+Call `mcp__ai-brain__get_lists` with `pinned: true` to get the user's stated goals and priorities.
 
 **Open items:**
-Call `get_open_items` to get unfinished tracked items across all lists.
+Call `mcp__ai-brain__get_open_items` to get unfinished tracked items across all lists.
 
 If the brain is empty or unreachable, tell the user: "Your brain doesn't have enough data for a meaningful review yet. Try capturing some thoughts first, or run `/brain-init` to bootstrap from your connected tools."
 
@@ -84,5 +84,5 @@ Aggregate unfinished threads from all sources:
 After presenting the review, ask:
 "Want me to save a summary of this review to your brain? This helps track trends across weeks."
 
-If yes, save a condensed version via `capture_thought` with format:
+If yes, save a condensed version via `mcp__ai-brain__capture_thought` with format:
 "Weekly review (week of [date]): [2-3 sentence summary of key themes, attention vs. intention highlights, and top recommendation]."

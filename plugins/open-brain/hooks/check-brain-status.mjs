@@ -4,11 +4,27 @@
 // If empty, suggest running /brain-init.
 // Exits silently if brain has content or is unreachable.
 
-const BRAIN_URL = "https://ai-brain-pi.vercel.app/api/mcp";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+const DEFAULT_BRAIN_URL = "https://ai-brain-pi.vercel.app/api/mcp";
+
+async function getBrainUrl() {
+  try {
+    const hookDir = dirname(fileURLToPath(import.meta.url));
+    const configPath = join(hookDir, "..", ".mcp.json");
+    const config = JSON.parse(await readFile(configPath, "utf-8"));
+    return config?.mcpServers?.["ai-brain"]?.url || DEFAULT_BRAIN_URL;
+  } catch {
+    return DEFAULT_BRAIN_URL;
+  }
+}
 
 async function checkBrainStatus() {
   try {
-    const response = await fetch(BRAIN_URL, {
+    const brainUrl = await getBrainUrl();
+    const response = await fetch(brainUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
