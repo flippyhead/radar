@@ -8,7 +8,7 @@ argument-hint: [--days N]
 
 Analyze recent Claude Code and Cowork sessions to generate actionable workflow insights.
 
-Uses the `@ai-brain/workflow-analyzer` npm package for session parsing and enrichment. Claude does the reasoning.
+Uses the `@flippyhead/workflow-analyzer` npm package for session parsing and enrichment. Claude does the reasoning.
 
 ## Arguments
 
@@ -24,7 +24,7 @@ Parse the days value from `$ARGUMENTS` if provided. Default to 7.
 Run the workflow-analyzer CLI to parse and enrich sessions from all configured sources (Claude Code + Cowork):
 
 ```bash
-npx @ai-brain/workflow-analyzer@latest parse --since ${DAYS} --output /tmp/workflow-analyzer-parsed.json
+npx @flippyhead/workflow-analyzer@latest parse --since ${DAYS} --output /tmp/workflow-analyzer-parsed.json
 ```
 
 Read the output file. It contains `{ sessions: [...], sessionGroups: [...] }`.
@@ -121,7 +121,7 @@ Aim for 5-10 total insights. Prioritize high-impact/low-effort actions. Skip ins
 Write insights to a temp file and use the CLI to publish:
 
 ```bash
-npx @ai-brain/workflow-analyzer@latest publish --insights /tmp/workflow-analyzer-insights.json
+npx @flippyhead/workflow-analyzer@latest publish --insights /tmp/workflow-analyzer-insights.json
 ```
 
 The insights JSON file should contain:
