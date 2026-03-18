@@ -1,0 +1,12 @@
+{
+  "name": "workflow-analyst",
+  "description": "Analyze your Claude Code and Cowork session history to surface actionable workflow insights — root cause diagnosis, automation opportunities, goal alignment, and knowledge management.",
+  "version": "2.0.0",
+  "author": {
+    "name": "Peter Brown",
+    "url": "https://ptb.io"
+  },
+  "repository": "https://github.com/flippyhead/claude-workflow-analyst",
+  "license": "MIT",
+  "keywords": ["workflow", "analytics", "insights", "productivity"]
+}

@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "command": "node \"${PLUGIN_DIR}/hooks/check-brain-status.mjs\"",
+        "description": "Suggest brain-init for new Open Brain users",
+        "timeout": 15000
+      }
+    ]
+  }
+}
