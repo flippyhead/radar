@@ -1,7 +1,7 @@
 {
   "name": "claude-workflow-analyst",
   "description": "AI Brain toolkit and workflow analysis for Claude Code and Cowork",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "author": {
     "name": "Peter Brown",
     "url": "https://ptb.io"
