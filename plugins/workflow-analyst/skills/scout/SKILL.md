@@ -1,6 +1,6 @@
 ---
 name: scout
-description: Build a catalogue of AI tools, features, and techniques from external sources. Scans changelogs, HN, GitHub, and your inbox.
+description: Build a catalogue of AI tools, features, and techniques from external sources. Scans dependency changelogs, HN, GitHub, and your inbox.
 argument-hint: [--sources <all|feeds|manual>] [--days N]
 ---
 
@@ -54,6 +54,19 @@ Load all items from `[Scout]` lists to build a set of known URLs for deduplicati
 
 **Brain mode:** Call `get_list` for each `[Scout]` list. Collect all item URLs into a set.
 **Local mode:** Read from the JSON file.
+
+### Step 2.5: Scan Project Dependencies
+
+Run `npx @flippyhead/workflow-analyzer@latest scan-deps --since ${DAYS} --output /tmp/workflow-analyzer-deps.json`. Read the output JSON.
+
+If the command fails or is not available, log a warning and skip to Step 3 — dependency scanning is additive, not required.
+
+For each entry in the `releases` array:
+1. Read the `release.body` (release notes) and `repoDescription` to assess relevance
+2. **Skip** routine releases: patch version bumps, typo fixes, minor dep updates, internal refactors, CI/CD changes, documentation-only releases
+3. **Catalogue** interesting releases: new CLI tools, MCP servers/integrations, AI/agent features, breaking changes, significant new APIs, performance improvements
+4. Create catalogue items using the standard enrichment from Step 5, with `source: "dependency-changelog"` and an additional `relevanceHint` of `"direct dependency"`
+5. Use the `release.url` as the item URL for deduplication against existing catalogue
 
 ### Step 3: Scan Structured Sources
 
@@ -110,7 +123,7 @@ For each new catalogue entry (from Step 3 or Step 4), set the `properties` field
 {
   "category": "<one of: claude-code, mcp, api, agent-sdk, prompting, tooling, workflow, general-ai>",
   "relevanceHints": ["<free-text tags describing what workflows/goals this helps with>"],
-  "source": "<one of: anthropic-changelog, hackernews, github, youtube, manual>",
+  "source": "<one of: anthropic-changelog, hackernews, github, youtube, manual, dependency-changelog>",
   "discoveredAt": "<ISO date>"
 }
 ```
