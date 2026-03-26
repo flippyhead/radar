@@ -66,14 +66,14 @@ No `claude-` prefix on any product-facing name. "Radar" and "Open Brain" are pla
 |-------|---------|---------|
 | radar | `/radar` | Combined: scan external sources then recommend. The default entry point. |
 | radar-analyze | `/radar-analyze` | Parse Claude Code and Cowork sessions, surface actionable insights |
-| radar-scan | `/radar-scan` | Scan external sources (Anthropic, HN, GitHub, YouTube, dependency changelogs), build catalogue |
+| radar-scan | `/radar-scan` | Scan external sources (Anthropic, HN, GitHub, YouTube, dependency changelogs via `scan-deps`), build catalogue |
 | radar-recommend | `/radar-recommend` | Match catalogue against personal context, surface personalized recommendations |
 
 **Why separate scan and recommend:** Different scheduling cadences. Scan can run daily via cron. Recommend may run weekly or on-demand. The combined `/radar` command exists for the common case of wanting both in one shot.
 
 **Argument consistency:**
 - `--days N` — lookback window (all skills)
-- `--focus <category>` — category filter (recommend, scan)
+- `--focus <category>` — category filter (recommend only)
 - `--sources <all|feeds|manual>` — source filter (scan only)
 
 ### Open Brain Plugin Skills (Unchanged)
@@ -97,7 +97,7 @@ Every radar skill works without brain. Brain adds persistence, cross-session his
 | Skill | Without Brain | With Brain |
 |-------|--------------|------------|
 | `/radar-analyze` | Parses sessions, prints insights to terminal | Also publishes insights via `create_report`, checks for duplicates via `get_insights` |
-| `/radar-scan` | Scans sources, prints catalogue to terminal, stores locally at `~/.claude/radar-catalogue.json` | Also stores catalogue in `[Scout]` brain lists, deduplicates across runs |
+| `/radar-scan` | Scans sources, prints catalogue to terminal, stores locally at `~/.claude/radar-catalogue.json` (auto-created on first run; migrates from `~/.claude/scout-catalogue.json` if found) | Also stores catalogue in `[Scout]` brain lists, deduplicates across runs |
 | `/radar-recommend` | Matches catalogue against environment + session history | Also loads goals and recent thoughts, publishes recommendations as insights |
 | `/radar` | Runs scan then recommend in terminal-only mode | Full brain-enhanced pipeline |
 
@@ -118,11 +118,12 @@ Skills check for brain availability by attempting a lightweight MCP call (`get_s
 ### Must Fix (P0)
 
 **1. Silent failures → clear messages.**
-All skills that interact with brain, external APIs, or the workflow-analyzer CLI must surface failures clearly:
-- Brain unavailable: "Brain not connected, running in terminal-only mode"
+All skills that interact with external APIs or the workflow-analyzer CLI must surface failures clearly:
 - GitHub rate limited: "GitHub API rate limited — scanned 12 of 47 dependencies. Set GITHUB_TOKEN for full scanning."
 - MCP tool missing: "Required MCP tool [name] not available. Check your plugin installation."
-- CLI not found: "workflow-analyzer CLI not found. Run: npm install -g @flippyhead/workflow-analyzer"
+- CLI failure: Skills invoke via `npx @flippyhead/workflow-analyzer@latest` which auto-installs. If npx itself fails, surface the error output directly.
+
+Brain unavailability is **not** surfaced as a warning — per Part 3, skills silently proceed in terminal-only mode. The absence of brain is the default, not a failure state.
 
 **2. Hook timeout fix.**
 The SessionStart hook (`check-brain-status.mjs`) makes 3 sequential fetches with 4s individual timeouts inside a 15s total timeout. Reduce to a single health-check fetch with a 5s timeout. The hook's job is detection, not full initialization.
@@ -139,7 +140,7 @@ Add a comment block at the top of each version file pointing to the other two lo
 When `GITHUB_TOKEN` is not set and scan-deps runs, print a one-line message explaining the rate limit and how to fix it.
 
 **6. First-run detection.**
-The SessionStart hook should detect if this is the user's first session after install (no previous analysis results, no catalogue file). If so, suggest: "Welcome to Radar. Try `/radar-analyze` to get started."
+The radar plugin gets its own SessionStart hook that detects first session after install (no previous analysis results, no catalogue file). If so, suggest: "Welcome to Radar. Try `/radar-analyze` to get started." This is separate from the open-brain hook — each plugin owns its own first-run experience. If only open-brain is installed, its hook only references brain commands. If only radar is installed, the radar hook only references radar commands.
 
 **7. Scout deduplication within a single run.**
 Deduplicate URLs across sources within a single scan run, not just against the existing catalogue.
@@ -149,8 +150,8 @@ Deduplicate URLs across sources within a single scan run, not just against the e
 **8. `browse_recent` date filtering.**
 Flag as an Open Brain API enhancement. Don't block this release on it.
 
-**9. Insight deduplication key schema.**
-Define a formal format: `{module}:{category}:{hash}` to prevent cross-module collisions.
+**9. Internal cross-references between skills.**
+Skills reference each other by name (e.g., discover's SKILL.md says "Run `/scout` first"). All internal cross-references must be updated to use new skill names (`/radar-scan`, `/radar-recommend`, etc.).
 
 ---
 
@@ -167,7 +168,10 @@ radar/                                  ← repo root (renamed from claude-workf
 │   ├── radar/                          ← renamed from workflow-analyst/
 │   │   ├── .claude-plugin/
 │   │   │   └── plugin.json            ← v3.0.0
-│   │   ├── .mcp.json                  ← ai-brain (used when available)
+│   │   ├── .mcp.json                  ← ai-brain; radar skills tolerate connection failure (terminal-only mode)
+│   │   ├── hooks/
+│   │   │   ├── hooks.json
+│   │   │   └── first-run.mjs          ← NEW: radar first-run detection
 │   │   └── skills/
 │   │       ├── radar/
 │   │       │   └── SKILL.md           ← NEW: combined scan + recommend
@@ -183,7 +187,7 @@ radar/                                  ← repo root (renamed from claude-workf
 │       ├── .mcp.json
 │       ├── hooks/
 │       │   ├── hooks.json
-│       │   └── check-brain-status.mjs ← updated: single fetch, first-run detection
+│       │   └── check-brain-status.mjs ← updated: single fetch, simplified timeout
 │       └── skills/
 │           ├── brain-init/
 │           │   └── SKILL.md
@@ -204,7 +208,8 @@ radar/                                  ← repo root (renamed from claude-workf
 - All skill directories renamed to match new commands
 - New `radar/SKILL.md` for the combined command
 - New `scripts/bump-version.sh`
-- Updated hook with simplified timeout and first-run detection
+- New radar-specific SessionStart hook (`first-run.mjs`) for first-run detection
+- Open-brain hook simplified (single fetch, no first-run radar messaging)
 
 ---
 
@@ -214,7 +219,9 @@ radar/                                  ← repo root (renamed from claude-workf
 
 This is a **major version bump to 3.0.0** for the radar plugin (breaking: renamed skills, renamed directories, renamed marketplace identifier).
 
-Open Brain bumps to **2.0.0** (breaking: new hook behavior, part of renamed marketplace repo).
+Open Brain bumps to **2.0.0** (breaking: hook behavior change, part of renamed marketplace repo).
+
+Root plugin.json bumps to **3.0.0** (tracks the highest plugin version).
 
 ### Migration for Existing Users
 
@@ -299,4 +306,14 @@ goal-aware recommendations, and weekly reviews.
 
 5. **Combined `/radar` command:** Exists for convenience. Separate scan/recommend commands exist for scheduling flexibility (cron scan daily, recommend weekly).
 
-6. **Local catalogue fallback:** `~/.claude/radar-catalogue.json` auto-created on first run without brain. Ensures scan/recommend work completely offline.
+6. **Local catalogue fallback:** `~/.claude/radar-catalogue.json` auto-created on first run without brain. One-time migration from `~/.claude/scout-catalogue.json` if found. Ensures scan/recommend work completely offline.
+
+7. **External npm package name unchanged:** Skills continue to use `npx @flippyhead/workflow-analyzer@latest`. The npm package name is an implementation detail invisible to users. No rename needed.
+
+8. **Root plugin.json version tracks the highest plugin version.** When radar is 3.0.0 and open-brain is 2.0.0, root is 3.0.0.
+
+9. **Radar plugin ships its own `.mcp.json`** declaring the ai-brain server. This means Claude Code will attempt to connect on session start even if only radar is installed. This is intentional — radar skills benefit from brain when available. The skills tolerate connection failure gracefully (silent terminal-only mode). If this causes UX issues (e.g., visible connection error on startup), revisit by making the MCP config only ship with open-brain.
+
+10. **Each plugin owns its own hooks.** Radar's first-run hook only references radar commands. Open-brain's hook only references brain commands. Neither assumes the other plugin is installed.
+
+11. **`scan-deps` integration carries over.** The existing dependency changelog scanning (Step 2.5 of scout) moves into `/radar-scan` unchanged. The `scan-deps` subcommand of `@flippyhead/workflow-analyzer` is not affected by the plugin rename.
