@@ -17,7 +17,7 @@ Collect from the brain using MCP tools. Each source is optional — work with wh
 Call `mcp__ai-brain__browse_recent` to get thoughts from the past 7 days.
 
 **Workflow insights:**
-Call `mcp__ai-brain__get_insights` with `status: "new"` and then `status: "noted"` to get unresolved workflow insights. If the `mcp__ai-brain__get_insights` tool is unavailable (workflow-analyst plugin not installed), note this and skip insight-dependent sections.
+Call `mcp__ai-brain__get_insights` with `status: "new"` and then `status: "noted"` to get unresolved workflow insights. If the `mcp__ai-brain__get_insights` tool is unavailable (radar plugin not installed), note this and skip insight-dependent sections.
 
 **Goals and priorities:**
 Call `mcp__ai-brain__get_lists` with `pinned: true` to get the user's stated goals and priorities.
