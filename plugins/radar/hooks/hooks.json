@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_DIR}/hooks/first-run.mjs\"",
+            "timeout": 5000
+          }
+        ]
+      }
+    ]
+  }
+}
