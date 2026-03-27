@@ -117,7 +117,7 @@ Change version to `2.0.0` and update the repository URL:
 - [ ] **Step 6: Commit**
 
 ```bash
-git add -A
+git add plugins/radar/ .claude-plugin/plugin.json .claude-plugin/marketplace.json plugins/open-brain/.claude-plugin/plugin.json
 git commit -m "feat!: rename workflow-analyst to radar, bump to v3.0.0
 
 BREAKING: Plugin names changed. Reinstall required.
@@ -148,7 +148,7 @@ mkdir -p plugins/radar/skills/radar
 - [ ] **Step 2: Commit the renames**
 
 ```bash
-git add -A
+git add plugins/radar/skills/
 git commit -m "refactor: rename skill directories to radar namespace
 
 - workflow-analyst/ → radar-analyze/
@@ -365,7 +365,55 @@ git commit -m "feat: update radar-recommend skill with new name and brain-option
 
 ---
 
-### Task 6: Create combined `/radar` skill
+### Task 6: Add error surfacing to radar skills (P0 reliability)
+
+**Files:**
+- Modify: `plugins/radar/skills/radar-analyze/SKILL.md`
+- Modify: `plugins/radar/skills/radar-scan/SKILL.md`
+- Modify: `plugins/radar/skills/radar-recommend/SKILL.md`
+
+Per spec P0 #1: all skills that interact with external APIs or the workflow-analyzer CLI must surface failures clearly rather than failing silently.
+
+- [ ] **Step 1: Add error surfacing to radar-analyze**
+
+In `radar-analyze/SKILL.md`, in Step 1 (Parse & Enrich Session Data), after the `npx` command, add:
+
+```
+If the `npx` command fails, surface the error output directly to the user. Do not swallow the error or exit silently.
+```
+
+- [ ] **Step 2: Add error surfacing to radar-scan**
+
+In `radar-scan/SKILL.md`, in Step 2.5 (Scan Project Dependencies), after the `npx` command and the existing fallback note, add:
+
+```
+If `GITHUB_TOKEN` is not set in the environment and the scan-deps output shows `rateLimited > 0`, print: "GitHub API rate limited — scanned [reposResolved] of [packageCount] dependencies. Set GITHUB_TOKEN for full scanning."
+```
+
+Also in Step 3 (Scan Structured Sources), after the per-source failure note, add:
+
+```
+When a source fails, print a clear one-line message: "Source [name] unavailable: [reason]. Continuing with remaining sources."
+```
+
+- [ ] **Step 3: Add error surfacing to radar-recommend**
+
+In `radar-recommend/SKILL.md`, in Step 1 (Load the Catalogue), after the empty catalogue check, add:
+
+```
+If the catalogue file exists but cannot be parsed (corrupt JSON), print: "Catalogue file at [path] is corrupt. Delete it and re-run `/radar-scan` to rebuild."
+```
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add plugins/radar/skills/radar-analyze/SKILL.md plugins/radar/skills/radar-scan/SKILL.md plugins/radar/skills/radar-recommend/SKILL.md
+git commit -m "fix: add clear error messages to radar skills (P0 reliability)"
+```
+
+---
+
+### Task 7: Create combined /radar skill
 
 **Files:**
 - Create: `plugins/radar/skills/radar/SKILL.md`
@@ -428,7 +476,7 @@ git commit -m "feat: add combined /radar skill (scan + recommend)"
 
 ---
 
-### Task 7: Simplify the open-brain SessionStart hook
+### Task 8: Simplify the open-brain SessionStart hook
 
 **Files:**
 - Modify: `plugins/open-brain/hooks/check-brain-status.mjs`
@@ -582,7 +630,7 @@ git commit -m "fix: simplify open-brain hook — reduce fetch calls, lower timeo
 
 ---
 
-### Task 8: Add radar first-run hook
+### Task 9: Add radar first-run hook
 
 **Files:**
 - Create: `plugins/radar/hooks/hooks.json`
@@ -666,7 +714,7 @@ git commit -m "feat: add radar first-run detection hook"
 
 ---
 
-### Task 9: Update open-brain skill cross-references
+### Task 10: Update open-brain skill cross-references
 
 **Files:**
 - Modify: `plugins/open-brain/skills/weekly-review/SKILL.md`
@@ -694,7 +742,7 @@ git commit -m "fix: update weekly-review cross-reference to radar plugin"
 
 ---
 
-### Task 10: Create version bump script
+### Task 11: Create version bump script
 
 **Files:**
 - Create: `scripts/bump-version.sh`
@@ -784,7 +832,7 @@ git commit -m "chore: add version bump script for syncing all 3 version location
 
 ---
 
-### Task 11: Rewrite README.md
+### Task 12: Rewrite README.md
 
 **Files:**
 - Modify: `README.md`
@@ -870,7 +918,7 @@ git commit -m "docs: rewrite README for radar rebrand"
 
 ---
 
-### Task 12: Update CLAUDE.md
+### Task 13: Update CLAUDE.md
 
 **Files:**
 - Modify: `CLAUDE.md`
@@ -966,7 +1014,7 @@ git commit -m "docs: update CLAUDE.md for radar rebrand and new structure"
 
 ---
 
-### Task 13: Rename GitHub repo
+### Task 14: Rename GitHub repo
 
 **Files:** None (GitHub operation)
 
@@ -998,7 +1046,7 @@ gh repo view flippyhead/radar --json name,url
 
 ---
 
-### Task 14: Smoke test
+### Task 15: Smoke test
 
 **Files:** None
 
