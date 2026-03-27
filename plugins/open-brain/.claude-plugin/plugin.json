@@ -1,12 +1,18 @@
 {
   "name": "open-brain",
   "description": "Your personal AI memory layer — zero-input onboarding, project sync, and weekly reviews powered by Open Brain.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": {
     "name": "Peter Brown",
     "url": "https://ptb.io"
   },
   "repository": "https://github.com/flippyhead/radar",
   "license": "MIT",
-  "keywords": ["brain", "memory", "knowledge", "onboarding", "review"]
+  "keywords": [
+    "brain",
+    "memory",
+    "knowledge",
+    "onboarding",
+    "review"
+  ]
 }

@@ -7,7 +7,7 @@
           {
             "type": "command",
             "command": "node \"${PLUGIN_DIR}/hooks/check-brain-status.mjs\"",
-            "timeout": 10000
+            "timeout": 20000
           }
         ]
       }

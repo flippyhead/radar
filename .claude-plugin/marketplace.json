@@ -11,14 +11,18 @@
       "name": "radar",
       "description": "Analyzes your coding sessions, scans the AI ecosystem, and recommends tools and techniques that match your goals and workflow.",
       "version": "3.0.0",
-      "author": { "name": "Peter Brown" },
+      "author": {
+        "name": "Peter Brown"
+      },
       "source": "./plugins/radar"
     },
     {
       "name": "open-brain",
       "description": "Persistent AI memory — save thoughts, track goals, sync projects, and get weekly reviews across all your sessions.",
-      "version": "2.0.0",
-      "author": { "name": "Peter Brown" },
+      "version": "2.0.1",
+      "author": {
+        "name": "Peter Brown"
+      },
       "source": "./plugins/open-brain"
     }
   ]
