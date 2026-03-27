@@ -27,6 +27,8 @@ Run the workflow-analyzer CLI to parse and enrich sessions from all configured s
 npx @flippyhead/workflow-analyzer@latest parse --since ${DAYS} --output /tmp/workflow-analyzer-parsed.json
 ```
 
+If the `npx` command fails, surface the error output directly to the user. Do not swallow the error or exit silently.
+
 Read the output file. It contains `{ sessions: [...], sessionGroups: [...] }`.
 
 If sessions is empty, report "No activity in the last N days" and stop.

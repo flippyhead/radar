@@ -26,6 +26,8 @@ Parse from `$ARGUMENTS` if provided.
 
 If the catalogue is empty, tell the user: "No catalogue entries found. Run `/radar-scan` first to build your discovery catalogue."
 
+If the catalogue file exists but cannot be parsed (corrupt JSON), print: "Catalogue file at [path] is corrupt. Delete it and re-run `/radar-scan` to rebuild."
+
 If `--focus` was specified, filter items to only those with matching `properties.category`.
 
 ### Step 2: Load Personal Context

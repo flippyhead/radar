@@ -63,6 +63,8 @@ Run `npx @flippyhead/workflow-analyzer@latest scan-deps --since ${DAYS} --output
 
 If the command fails or is not available, log a warning and skip to Step 3 — dependency scanning is additive, not required.
 
+If `GITHUB_TOKEN` is not set in the environment and the scan-deps output shows `rateLimited > 0`, print: "GitHub API rate limited — scanned [reposResolved] of [packageCount] dependencies. Set GITHUB_TOKEN for full scanning."
+
 For each entry in the `releases` array:
 1. Read the `release.body` (release notes) and `repoDescription` to assess relevance
 2. **Skip** routine releases: patch version bumps, typo fixes, minor dep updates, internal refactors, CI/CD changes, documentation-only releases
@@ -75,6 +77,8 @@ For each entry in the `releases` array:
 Skip this step if `--sources manual` was specified.
 
 Limit to **10-15 items per source**. If a source fails (timeout, rate limit, format change), log a warning and continue to the next source — never fail the entire run.
+
+When a source fails, print a clear one-line message: "Source [name] unavailable: [reason]. Continuing with remaining sources."
 
 **Anthropic changelog/blog:**
 Use `WebFetch` on `https://docs.anthropic.com/en/docs/about-claude/models` and `https://www.anthropic.com/news` to find recent releases and feature announcements. Extract title, URL, and a one-line description for each.
