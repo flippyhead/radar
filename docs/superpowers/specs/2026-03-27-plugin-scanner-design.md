@@ -1,15 +1,15 @@
-# Plugin & Skill Update Scanner for scout
+# Plugin & Skill Update Scanner for radar-scan
 
 **Date:** 2026-03-27
 **Status:** Draft
 
 ## Summary
 
-Extend `scan-deps` in `@flippyhead/workflow-analyzer` to also scan installed Claude Code plugins for recent releases. The scout skill passes plugin repo info to `scan-deps`, which fetches releases using the same GitHub Releases API it already uses for npm dependencies. Plugin updates surface in the `[Scout] Claude Code` catalogue list tagged with `source: "plugin-changelog"`.
+Extend `scan-deps` in `@flippyhead/workflow-analyzer` to also scan installed Claude Code plugins for recent releases. The scout skill passes plugin repo info to `scan-deps`, which fetches releases using the same GitHub Releases API it already uses for npm dependencies. Plugin updates surface in the `[Radar] Claude Code` catalogue list tagged with `source: "plugin-changelog"`.
 
 ## Motivation
 
-Installed plugins and skills (superpowers, figma, frontend-design, etc.) are updated frequently with new skills, workflow improvements, and behavioral changes. These updates directly affect daily workflow but are invisible — there's no notification when a plugin ships a new version. The scout skill already scans npm dependency changelogs via `scan-deps`; extending it to also cover plugin repos keeps the architecture DRY and gives the user a single place to review what's new across their entire toolchain.
+Installed plugins and skills (superpowers, figma, frontend-design, etc.) are updated frequently with new skills, workflow improvements, and behavioral changes. These updates directly affect daily workflow but are invisible — there's no notification when a plugin ships a new version. The radar-scan skill already scans npm dependency changelogs via `scan-deps`; extending it to also cover plugin repos keeps the architecture DRY and gives the user a single place to review what's new across their entire toolchain.
 
 ## Changes to scan-deps CLI
 
@@ -23,7 +23,7 @@ npx @flippyhead/workflow-analyzer@latest scan-deps [existing flags] --plugins <p
 
 ### Plugin input format
 
-The scout skill generates a temporary JSON file from `installed_plugins.json` + `known_marketplaces.json`:
+The radar-scan skill generates a temporary JSON file from `installed_plugins.json` + `known_marketplaces.json`:
 
 ```json
 {
@@ -120,7 +120,7 @@ Add to the output JSON root:
 }
 ```
 
-## Changes to scout skill (SKILL.md)
+## Changes to radar-scan skill (SKILL.md)
 
 ### Step 2.5 modification
 
@@ -141,7 +141,7 @@ npx @flippyhead/workflow-analyzer@latest scan-deps --since ${DAYS} --plugins /tm
 
 When iterating over the `releases` array, check `sourceType`:
 
-- **`"plugin"` entries:** Create catalogue items with `source: "plugin-changelog"`, `category: "claude-code"`, and `relevanceHint: "installed plugin"`. Route to `[Scout] Claude Code` list.
+- **`"plugin"` entries:** Create catalogue items with `source: "plugin-changelog"`, `category: "claude-code"`, and `relevanceHint: "installed plugin"`. Route to `[Radar] Claude Code` list.
 - **Other entries:** Existing behavior (npm dep changelog processing).
 
 ### Step 5 tag additions
@@ -171,7 +171,7 @@ Add a plugin updates section to the summary output. The skill derives the "insta
 
 ### Files to modify (in this repo)
 
-- `plugins/workflow-analyst/skills/scout/SKILL.md` — update Step 2.5 to build plugin input and pass `--plugins` flag, update Step 5 source enum, update Step 6 report format
+- `plugins/radar/skills/radar-scan/SKILL.md` — update Step 2.5 to build plugin input and pass `--plugins` flag, update Step 5 source enum, update Step 6 report format
 
 ### No new files needed
 

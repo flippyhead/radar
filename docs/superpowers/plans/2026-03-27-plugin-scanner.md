@@ -2,13 +2,13 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Extend scan-deps to scan installed Claude Code plugins for updates, surfacing them in the scout catalogue.
+**Goal:** Extend scan-deps to scan installed Claude Code plugins for updates, surfacing them in the radar-scan catalogue.
 
-**Architecture:** Add a `--plugins` flag to the scan-deps CLI that accepts a JSON file of plugin repo info. A new `fetchPluginUpdates()` function handles dedicated-repo plugins (releases API) and monorepo plugins (Compare/commits API with path scoping). The scout SKILL.md builds the plugin input from `installed_plugins.json` + `known_marketplaces.json` and routes results to `[Scout] Claude Code`.
+**Architecture:** Add a `--plugins` flag to the scan-deps CLI that accepts a JSON file of plugin repo info. A new `fetchPluginUpdates()` function handles dedicated-repo plugins (releases API) and monorepo plugins (Compare/commits API with path scoping). The radar-scan SKILL.md builds the plugin input from `installed_plugins.json` + `known_marketplaces.json` and routes results to `[Radar] Claude Code`.
 
 **Tech Stack:** TypeScript, Node.js native fetch, GitHub REST API, vitest
 
-**Repos:** Tasks 1-5 are in `~/Development/workflow-analyzer`. Task 6 is in `~/Development/claude-workflow-analyst`.
+**Repos:** Tasks 1-5 are in `~/Development/workflow-analyzer`. Task 6 is in `~/Development/claude-workflow-analyst`. Note: this repo was recently rebranded — `workflow-analyst` plugin is now `radar`, `scout` skill is now `radar-scan`, `[Scout]` lists are now `[Radar]`.
 
 ---
 
@@ -966,10 +966,10 @@ git push && git push --tags
 
 ---
 
-### Task 6: Update scout SKILL.md
+### Task 6: Update radar-scan SKILL.md
 
 **Files:**
-- Modify: `~/Development/claude-workflow-analyst/plugins/workflow-analyst/skills/scout/SKILL.md`
+- Modify: `~/Development/claude-workflow-analyst/plugins/radar/skills/radar-scan/SKILL.md`
 
 - [ ] **Step 1: Update Step 2.5 to build and pass plugin input**
 
@@ -1024,7 +1024,7 @@ For each entry in the `releases` array where `sourceType` is NOT `"plugin"`:
 For each entry in the `releases` array where `sourceType` is `"plugin"`:
 1. Read the `release.body` to summarize what changed
 2. Create catalogue items with `source: "plugin-changelog"`, `category: "claude-code"`, and `relevanceHints: ["installed plugin", "<plugin-name>"]`
-3. Route to the `[Scout] Claude Code` list
+3. Route to the `[Radar] Claude Code` list
 4. Use the `release.url` as the item URL for deduplication
 ````
 
@@ -1051,15 +1051,15 @@ Read through the updated SKILL.md to ensure no broken markdown, consistent step 
 
 - [ ] **Step 5: Bump plugin version**
 
-Run: `cd ~/Development/claude-workflow-analyst && ./scripts/bump-version.sh radar 3.1.0`
+Check the current radar version in `plugins/radar/.claude-plugin/plugin.json` and bump minor:
 
-(Adjust the version number based on the current version — this is a minor bump for a new feature.)
+Run: `cd ~/Development/claude-workflow-analyst && ./scripts/bump-version.sh radar <next-minor>`
 
 - [ ] **Step 6: Commit**
 
 ```bash
 cd ~/Development/claude-workflow-analyst
-git add plugins/workflow-analyst/skills/scout/SKILL.md
-git add .claude-plugin/plugin.json .claude-plugin/marketplace.json plugins/workflow-analyst/.claude-plugin/plugin.json
-git commit -m "feat(scout): scan installed plugins for updates via scan-deps --plugins"
+git add plugins/radar/skills/radar-scan/SKILL.md
+git add .claude-plugin/plugin.json .claude-plugin/marketplace.json plugins/radar/.claude-plugin/plugin.json
+git commit -m "feat(radar-scan): scan installed plugins for updates via scan-deps --plugins"
 ```
