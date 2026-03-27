@@ -19,7 +19,7 @@
     {
       "name": "open-brain",
       "description": "Persistent AI memory — save thoughts, track goals, sync projects, and get weekly reviews across all your sessions.",
-      "version": "2.0.2",
+      "version": "2.0.0",
       "author": {
         "name": "Peter Brown"
       },
