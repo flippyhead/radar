@@ -11,8 +11,8 @@
 **Spec:** `docs/superpowers/specs/2026-03-25-dep-scanner-design.md`
 
 **Repos involved:**
-- `workflow-analyzer` at `/Users/peterbrown/Development/workflow-analyzer/` — all code changes
-- `claude-workflow-analyst` at `/Users/peterbrown/Development/claude-workflow-analyst/` — SKILL.md update only
+- `workflow-analyzer` at `~/Development/workflow-analyzer/` — all code changes
+- `claude-workflow-analyst` at `~/Development/claude-workflow-analyst/` — SKILL.md update only
 
 ---
 
@@ -59,7 +59,7 @@ export interface ScanDepsOptions {
 }
 
 export interface DiscoveredProject {
-  /** Decoded filesystem path, e.g. /Users/peterbrown/Development/ai-brain */
+  /** Decoded filesystem path, e.g. ~/Development/ai-brain */
   path: string;
   /** Encoded directory name from ~/.claude/projects/ */
   encodedDir: string;
@@ -131,7 +131,7 @@ Note: This file will cause import errors until the other modules exist. That's f
 - [ ] **Step 3: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 git add src/deps/types.ts src/deps/index.ts
 git commit -m "feat(scan-deps): add type definitions for dependency scanner"
 ```
@@ -282,7 +282,7 @@ describe("discoverProjectDeps", () => {
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/deps/__tests__/project-discovery.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/deps/__tests__/project-discovery.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement project discovery**
@@ -524,13 +524,13 @@ export async function discoverProjectDeps(
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/deps/__tests__/project-discovery.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/deps/__tests__/project-discovery.test.ts`
 Expected: All 5 tests PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 git add src/deps/project-discovery.ts src/deps/__tests__/project-discovery.test.ts
 git commit -m "feat(scan-deps): add project discovery with workspace support"
 ```
@@ -719,7 +719,7 @@ describe("resolveToGithubRepos", () => {
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/deps/__tests__/npm-resolver.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/deps/__tests__/npm-resolver.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement npm resolver**
@@ -832,13 +832,13 @@ export async function resolveToGithubRepos(
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/deps/__tests__/npm-resolver.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/deps/__tests__/npm-resolver.test.ts`
 Expected: All 13 tests PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 git add src/deps/npm-resolver.ts src/deps/__tests__/npm-resolver.test.ts
 git commit -m "feat(scan-deps): add npm registry resolver with GitHub URL parsing"
 ```
@@ -1020,7 +1020,7 @@ describe("fetchRecentReleases", () => {
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/deps/__tests__/github-releases.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/deps/__tests__/github-releases.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement GitHub releases fetcher**
@@ -1136,13 +1136,13 @@ export async function fetchRecentReleases(
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/deps/__tests__/github-releases.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/deps/__tests__/github-releases.test.ts`
 Expected: All 5 tests PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 git add src/deps/github-releases.ts src/deps/__tests__/github-releases.test.ts
 git commit -m "feat(scan-deps): add GitHub releases fetcher with rate limit handling"
 ```
@@ -1190,7 +1190,7 @@ describe("scanDeps", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/commands/__tests__/scan-deps.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/commands/__tests__/scan-deps.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement scan-deps command**
@@ -1265,7 +1265,7 @@ export async function scanDeps(
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/commands/__tests__/scan-deps.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/commands/__tests__/scan-deps.test.ts`
 Expected: PASS
 
 - [ ] **Step 5: Register scan-deps in CLI**
@@ -1319,18 +1319,18 @@ Also add the import at the top of `src/cli.ts` — actually, since we're using d
 
 - [ ] **Step 6: Run all tests**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run`
 Expected: All tests PASS
 
 - [ ] **Step 7: Build and verify CLI help**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npm run build && node dist/cli.js scan-deps --help`
+Run: `cd ~/Development/workflow-analyzer && npm run build && node dist/cli.js scan-deps --help`
 Expected: Shows scan-deps usage with `--since`, `--include-dev`, `-o` options
 
 - [ ] **Step 8: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 git add src/commands/scan-deps.ts src/commands/__tests__/scan-deps.test.ts src/cli.ts
 git commit -m "feat(scan-deps): add scan-deps CLI command with full pipeline"
 ```
@@ -1358,13 +1358,13 @@ export * from "./deps/types.js";
 
 - [ ] **Step 3: Build and verify**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npm run build`
+Run: `cd ~/Development/workflow-analyzer && npm run build`
 Expected: Clean compile, no errors
 
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 git add src/deps/index.ts src/index.ts
 git commit -m "feat(scan-deps): export scan-deps from package public API"
 ```
@@ -1378,7 +1378,7 @@ git commit -m "feat(scan-deps): export scan-deps from package public API"
 
 - [ ] **Step 1: Add Step 2.5 and update source enum**
 
-In `/Users/peterbrown/Development/claude-workflow-analyst/plugins/workflow-analyst/skills/scout/SKILL.md`:
+In `~/Development/claude-workflow-analyst/plugins/workflow-analyst/skills/scout/SKILL.md`:
 
 After the `### Step 2: Load Existing Catalogue` section and before `### Step 3: Scan Structured Sources`, insert:
 
@@ -1410,7 +1410,7 @@ Read the modified file and confirm the markdown structure is valid and step numb
 - [ ] **Step 3: Commit (in claude-workflow-analyst repo)**
 
 ```bash
-cd /Users/peterbrown/Development/claude-workflow-analyst
+cd ~/Development/claude-workflow-analyst
 git add plugins/workflow-analyst/skills/scout/SKILL.md
 git commit -m "feat(scout): add dependency changelog scanning via scan-deps command"
 ```
@@ -1437,7 +1437,7 @@ Ensure all three stay in sync with the new minor version.
 - [ ] **Step 3: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/claude-workflow-analyst
+cd ~/Development/claude-workflow-analyst
 git add .claude-plugin/plugin.json .claude-plugin/marketplace.json plugins/workflow-analyst/.claude-plugin/plugin.json
 git commit -m "chore: bump versions for scan-deps feature"
 ```
@@ -1449,14 +1449,14 @@ git commit -m "chore: bump versions for scan-deps feature"
 - [ ] **Step 1: Build and publish locally**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 npm run build
 ```
 
 - [ ] **Step 2: Run scan-deps against real projects**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 node dist/cli.js scan-deps --since 30 --output /tmp/workflow-analyzer-deps.json
 ```
 
@@ -1474,7 +1474,7 @@ Read `/tmp/workflow-analyzer-deps.json` and confirm:
 - [ ] **Step 4: Run full test suite**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 npx vitest run
 ```
 

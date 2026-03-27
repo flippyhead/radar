@@ -8,14 +8,14 @@
 
 **Tech Stack:** TypeScript, Node.js native fetch, GitHub REST API, vitest
 
-**Repos:** Tasks 1-5 are in `/Users/peterbrown/Development/workflow-analyzer`. Task 6 is in `/Users/peterbrown/Development/claude-workflow-analyst`.
+**Repos:** Tasks 1-5 are in `~/Development/workflow-analyzer`. Task 6 is in `~/Development/claude-workflow-analyst`.
 
 ---
 
 ### Task 1: Add plugin types
 
 **Files:**
-- Modify: `/Users/peterbrown/Development/workflow-analyzer/src/deps/types.ts`
+- Modify: `~/Development/workflow-analyzer/src/deps/types.ts`
 
 - [ ] **Step 1: Write the new types**
 
@@ -55,13 +55,13 @@ export interface ScanDepsWithPluginsOutput extends ScanDepsOutput {
 
 - [ ] **Step 2: Verify the build compiles**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx tsc --noEmit`
+Run: `cd ~/Development/workflow-analyzer && npx tsc --noEmit`
 Expected: No errors
 
 - [ ] **Step 3: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 git add src/deps/types.ts
 git commit -m "feat(scan-deps): add plugin input and output types"
 ```
@@ -71,8 +71,8 @@ git commit -m "feat(scan-deps): add plugin input and output types"
 ### Task 2: Implement plugin update fetcher
 
 **Files:**
-- Create: `/Users/peterbrown/Development/workflow-analyzer/src/deps/plugin-releases.ts`
-- Test: `/Users/peterbrown/Development/workflow-analyzer/src/deps/__tests__/plugin-releases.test.ts`
+- Create: `~/Development/workflow-analyzer/src/deps/plugin-releases.ts`
+- Test: `~/Development/workflow-analyzer/src/deps/__tests__/plugin-releases.test.ts`
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -338,7 +338,7 @@ describe("fetchPluginUpdates", () => {
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/deps/__tests__/plugin-releases.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/deps/__tests__/plugin-releases.test.ts`
 Expected: FAIL — module `../plugin-releases.js` not found
 
 - [ ] **Step 3: Implement fetchPluginUpdates**
@@ -636,13 +636,13 @@ export async function fetchPluginUpdates(
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/deps/__tests__/plugin-releases.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/deps/__tests__/plugin-releases.test.ts`
 Expected: All 8 tests pass
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 git add src/deps/plugin-releases.ts src/deps/__tests__/plugin-releases.test.ts
 git commit -m "feat(scan-deps): add plugin update fetcher with Compare API fallback"
 ```
@@ -652,10 +652,10 @@ git commit -m "feat(scan-deps): add plugin update fetcher with Compare API fallb
 ### Task 3: Wire plugins into scan-deps command
 
 **Files:**
-- Modify: `/Users/peterbrown/Development/workflow-analyzer/src/commands/scan-deps.ts`
-- Modify: `/Users/peterbrown/Development/workflow-analyzer/src/cli.ts`
-- Modify: `/Users/peterbrown/Development/workflow-analyzer/src/index.ts`
-- Test: `/Users/peterbrown/Development/workflow-analyzer/src/commands/__tests__/scan-deps.test.ts`
+- Modify: `~/Development/workflow-analyzer/src/commands/scan-deps.ts`
+- Modify: `~/Development/workflow-analyzer/src/cli.ts`
+- Modify: `~/Development/workflow-analyzer/src/index.ts`
+- Test: `~/Development/workflow-analyzer/src/commands/__tests__/scan-deps.test.ts`
 
 - [ ] **Step 1: Write the failing test**
 
@@ -724,7 +724,7 @@ it("includes plugin releases when pluginsPath is provided", async () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/commands/__tests__/scan-deps.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/commands/__tests__/scan-deps.test.ts`
 Expected: FAIL — `pluginsPath` not in options type, `pluginsScanned` not in output
 
 - [ ] **Step 3: Update scan-deps command to accept and process plugins**
@@ -835,7 +835,7 @@ export async function scanDeps(
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run src/commands/__tests__/scan-deps.test.ts`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run src/commands/__tests__/scan-deps.test.ts`
 Expected: All tests pass
 
 - [ ] **Step 5: Add --plugins flag to CLI**
@@ -880,13 +880,13 @@ The new types are already exported via the `export * from "./deps/types.js"` lin
 
 - [ ] **Step 7: Run full test suite**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npx vitest run`
+Run: `cd ~/Development/workflow-analyzer && npx vitest run`
 Expected: All tests pass
 
 - [ ] **Step 8: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 git add src/commands/scan-deps.ts src/commands/__tests__/scan-deps.test.ts src/cli.ts
 git commit -m "feat(scan-deps): add --plugins flag for scanning installed Claude Code plugins"
 ```
@@ -900,7 +900,7 @@ git commit -m "feat(scan-deps): add --plugins flag for scanning installed Claude
 
 - [ ] **Step 1: Build the project**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npm run build`
+Run: `cd ~/Development/workflow-analyzer && npm run build`
 Expected: Compiles without errors
 
 - [ ] **Step 2: Create a test plugins JSON file**
@@ -926,13 +926,13 @@ EOF
 
 - [ ] **Step 3: Run scan-deps with --plugins flag**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && node dist/cli.js scan-deps --since 30 --plugins /tmp/test-plugins.json`
+Run: `cd ~/Development/workflow-analyzer && node dist/cli.js scan-deps --since 30 --plugins /tmp/test-plugins.json`
 Expected: JSON output containing a release entry with `"sourceType": "plugin"` for superpowers (if releases exist in the last 30 days), plus `pluginsScanned` and `pluginsWithUpdates` in root.
 
 - [ ] **Step 4: Commit (version bump)**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 # Bump version in package.json from 0.2.0 to 0.3.0 (minor: new feature)
 npm version minor --no-git-tag-version
 git add package.json
@@ -948,7 +948,7 @@ git commit -m "chore: bump workflow-analyzer to 0.3.0 for plugin scanning"
 
 - [ ] **Step 1: Publish to npm**
 
-Run: `cd /Users/peterbrown/Development/workflow-analyzer && npm publish`
+Run: `cd ~/Development/workflow-analyzer && npm publish`
 Expected: Published `@flippyhead/workflow-analyzer@0.3.0`
 
 - [ ] **Step 2: Verify the published version**
@@ -959,7 +959,7 @@ Expected: Shows `--plugins` option in help output
 - [ ] **Step 3: Commit and tag**
 
 ```bash
-cd /Users/peterbrown/Development/workflow-analyzer
+cd ~/Development/workflow-analyzer
 git tag v0.3.0
 git push && git push --tags
 ```
@@ -969,7 +969,7 @@ git push && git push --tags
 ### Task 6: Update scout SKILL.md
 
 **Files:**
-- Modify: `/Users/peterbrown/Development/claude-workflow-analyst/plugins/workflow-analyst/skills/scout/SKILL.md`
+- Modify: `~/Development/claude-workflow-analyst/plugins/workflow-analyst/skills/scout/SKILL.md`
 
 - [ ] **Step 1: Update Step 2.5 to build and pass plugin input**
 
@@ -1051,14 +1051,14 @@ Read through the updated SKILL.md to ensure no broken markdown, consistent step 
 
 - [ ] **Step 5: Bump plugin version**
 
-Run: `cd /Users/peterbrown/Development/claude-workflow-analyst && ./scripts/bump-version.sh radar 3.1.0`
+Run: `cd ~/Development/claude-workflow-analyst && ./scripts/bump-version.sh radar 3.1.0`
 
 (Adjust the version number based on the current version — this is a minor bump for a new feature.)
 
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/peterbrown/Development/claude-workflow-analyst
+cd ~/Development/claude-workflow-analyst
 git add plugins/workflow-analyst/skills/scout/SKILL.md
 git add .claude-plugin/plugin.json .claude-plugin/marketplace.json plugins/workflow-analyst/.claude-plugin/plugin.json
 git commit -m "feat(scout): scan installed plugins for updates via scan-deps --plugins"
