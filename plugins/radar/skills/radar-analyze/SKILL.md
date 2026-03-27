@@ -1,10 +1,10 @@
 ---
-name: workflow-analyst
+name: radar-analyze
 description: Analyze your Claude Code and Cowork session history to surface actionable workflow insights. Diagnoses failures, identifies automation opportunities, aligns time allocation with goals, and flags repeated knowledge worth saving.
 argument-hint: [--days N]
 ---
 
-# AI Workflow Analyst
+# Radar Analyze
 
 Analyze recent Claude Code and Cowork sessions to generate actionable workflow insights.
 
@@ -139,10 +139,13 @@ The insights JSON file should contain:
 
 Write this file before running the publish command. If publish fails, fall back to saving insights via `create_report` or `capture_thought` MCP tools.
 
+If no brain MCP tools are available, skip publishing entirely — the terminal output from Step 6 is the primary output in terminal-only mode.
+
 ### Step 6: Summary
 
 Output a brief summary:
 - How many insights were generated, by module
 - The report period and session count (including Cowork if any)
 - Top 2-3 "quick win" recommendations (highest impact, lowest effort)
-- Direct the user to /insights in the AI Brain web UI to review and provide feedback
+- If brain is connected: "Insights also saved to your brain. Review at /insights in the AI Brain web UI."
+- If terminal-only: no brain reference in the output
