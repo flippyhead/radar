@@ -1,51 +1,64 @@
-# Claude Workflow Analyst — Plugin Marketplace
+# Radar
 
-Two plugins for building your personal AI memory layer and analyzing your workflow.
+Your AI development radar. Watches your sessions, scans the ecosystem, and recommends what matters to you.
 
-## Plugins
+Ships two plugins:
+- **Radar** — workflow intelligence for Claude Code and Cowork
+- **Open Brain** — persistent AI memory across sessions
 
-### Open Brain
-
-Your personal AI memory layer — zero-input onboarding, project sync, and weekly reviews.
-
-```bash
-/plugin install open-brain@claude-workflow-analyst
-```
-
-**Skills:**
-- `/brain-init` — Bootstrap your brain from connected tools (email, calendar, ClickUp, GitHub, etc.) and Claude's memory. No manual data entry.
-- `/brain-sync` — Sync the current project's context into your brain. Compares against existing knowledge and captures only changes.
-- `/weekly-review` — Weekly synthesis of your thoughts, workflow insights, and goals. Surfaces gaps, open loops, and recommendations.
-
-**Includes:** Open Brain MCP connector (auto-configured on install).
-
-### Workflow Analyst
-
-Analyze your Claude Code and Cowork session history for actionable insights.
+## Quick Start
 
 ```bash
-/plugin install workflow-analyst@claude-workflow-analyst
+# Install both plugins (one command)
+/plugin marketplace add flippyhead/radar
+
+# Try it
+/radar-analyze
 ```
 
-**Skills:**
-- `/workflow-analyst` — Parses recent sessions and produces insights: root cause diagnosis, automation opportunities, goal alignment, knowledge nudges.
+## Commands
 
-**Works standalone.** Enhanced when Open Brain is connected (insights stored with feedback controls, goal comparison, deduplication).
+### Radar (workflow intelligence)
 
-## Install
+| Command | What it does |
+|---------|-------------|
+| `/radar` | Scan ecosystem + recommend improvements (combined) |
+| `/radar-analyze` | Analyze your recent coding sessions |
+| `/radar-scan` | Scan external sources for new tools and techniques |
+| `/radar-recommend` | Get personalized recommendations from your catalogue |
+
+### Open Brain (persistent memory)
+
+| Command | What it does |
+|---------|-------------|
+| `/brain-init` | Set up your brain from connected tools |
+| `/brain-sync` | Sync current project to your brain |
+| `/weekly-review` | Weekly synthesis of your work and goals |
+
+## How They Work Together
+
+Radar works standalone — session analysis and ecosystem scanning run in terminal-only mode with zero setup.
+
+Connect [Open Brain](https://ai-brain-pi.vercel.app) for cross-session memory: persistent catalogue, goal-aware recommendations, and weekly reviews.
+
+## Install Individually
 
 ```bash
-# Add the marketplace (one time)
-/plugin marketplace add flippyhead/claude-workflow-analyst
+# Just workflow intelligence
+/plugin install radar@flippyhead/radar
 
-# Install one or both plugins
-/plugin install open-brain@claude-workflow-analyst
-/plugin install workflow-analyst@claude-workflow-analyst
+# Just persistent memory
+/plugin install open-brain@flippyhead/radar
 ```
 
-## AI Brain
+## Upgrading from `claude-workflow-analyst`?
 
-Both plugins integrate with [Open Brain](https://ai-brain-pi.vercel.app) — a personal AI memory layer. Sign up at the link, then the MCP connector is configured automatically when you install either plugin.
+```bash
+/plugin marketplace remove flippyhead/claude-workflow-analyst
+/plugin marketplace add flippyhead/radar
+```
+
+Your Open Brain data is unchanged — it lives on the server, not in the plugin.
 
 ## License
 
