@@ -1,64 +1,52 @@
 # Radar
 
-Your AI development radar. Watches your sessions, scans the ecosystem, and recommends what matters to you.
+Your AI development radar. Analyzes your coding sessions, scans the ecosystem, and tells you what matters — based on what you actually do.
 
-Ships two plugins:
-- **Radar** — workflow intelligence for Claude Code and Cowork
-- **Open Brain** — persistent AI memory across sessions
+Works with Claude Code. Zero setup. All data stays local.
 
-## Quick Start
+## Install
 
 ```bash
-# Install both plugins (one command)
 /plugin marketplace add flippyhead/radar
-
-# Try it
-/radar-analyze
+/plugin install radar@flippyhead/radar
 ```
 
 ## Commands
 
-### Radar (workflow intelligence)
-
 | Command | What it does |
 |---------|-------------|
-| `/radar` | Scan ecosystem + recommend improvements (combined) |
-| `/radar-analyze` | Analyze your recent coding sessions |
-| `/radar-scan` | Scan external sources for new tools and techniques |
-| `/radar-recommend` | Get personalized recommendations from your catalogue |
+| `/radar` | Scan ecosystem + get personalized recommendations |
+| `/radar-analyze` | Analyze your recent coding sessions for workflow insights |
+| `/radar-scan` | Scan HN, GitHub, YouTube, Anthropic, and your dependencies for new tools |
+| `/radar-recommend` | Match discoveries against your usage patterns |
+| `/radar-review` | Browse, star, dismiss, and annotate your catalogue |
 
-### Open Brain (persistent memory)
+## How It Works
 
-| Command | What it does |
-|---------|-------------|
-| `/brain-init` | Set up your brain from connected tools |
-| `/brain-sync` | Sync current project to your brain |
-| `/weekly-review` | Weekly synthesis of your work and goals |
+**Scan** — Radar pulls from Hacker News, GitHub, YouTube, the Anthropic changelog, and your project dependencies. It builds a local catalogue of AI tools, MCP servers, features, and techniques.
 
-## How They Work Together
+**Analyze** — Parses your Claude Code session history to find tool failures, automation opportunities, time allocation patterns, and repeated knowledge worth saving.
 
-Radar works standalone — session analysis and ecosystem scanning run in terminal-only mode with zero setup.
+**Recommend** — Matches catalogue entries against your actual usage patterns, installed tools, and active projects. Scores each item on goal alignment, usage gap, recency, and effort/impact.
 
-Connect [Open Brain](https://ai-brain-pi.vercel.app) for cross-session memory: persistent catalogue, goal-aware recommendations, and weekly reviews.
+**Review** — Conversational interface to manage your catalogue. Star things to try, dismiss noise, add notes, filter by date or category.
 
-## Install Individually
+## Data
 
-```bash
-# Just workflow intelligence
-/plugin install radar@flippyhead/radar
+Everything lives in `~/.claude/radar/catalogue.json` — a single JSON file you own. No accounts, no servers, no external dependencies.
 
-# Just persistent memory
-/plugin install open-brain@flippyhead/radar
-```
+The catalogue schema is stable and documented. Future adapter plugins can sync it to Notion, Linear, ClickUp, or any other system.
 
-## Upgrading from `claude-workflow-analyst`?
+## Upgrading
+
+From `claude-workflow-analyst`:
 
 ```bash
 /plugin marketplace remove flippyhead/claude-workflow-analyst
 /plugin marketplace add flippyhead/radar
 ```
 
-Your Open Brain data is unchanged — it lives on the server, not in the plugin.
+Radar automatically migrates your existing catalogue on first run.
 
 ## License
 
