@@ -6,7 +6,7 @@ argument-hint: [--days N] [--sources <all|feeds|manual>] [--focus <category>]
 
 # Radar
 
-Combined scan + recommend pipeline. Scans external sources for new AI tools and techniques, then matches them against your goals and usage patterns to surface personalized recommendations.
+Combined scan + recommend pipeline. Scans external sources for new AI tools and techniques, then matches them against your usage patterns to surface personalized recommendations.
 
 This is the default entry point. Use `/radar-scan` or `/radar-recommend` separately if you need different scheduling cadences (e.g., scan daily, recommend weekly).
 
@@ -38,5 +38,4 @@ This phase uses the freshly updated catalogue from Phase 1, ensuring recommendat
 Output a combined summary:
 - Scan: how many new items catalogued, by source
 - Recommendations: top "Act Now" items
-- If brain is connected: "Results saved to your brain."
-- If terminal-only: no brain reference
+- Tip: "Run `/radar-review` to browse and manage your catalogue."
