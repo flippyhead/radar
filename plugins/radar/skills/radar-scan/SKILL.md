@@ -6,7 +6,7 @@ argument-hint: [--sources <all|feeds|manual>] [--days N]
 
 # Radar Scan — Discovery Catalogue Builder
 
-Build and maintain a catalogue of AI tools, features, and techniques from external sources. Runs independently of your personal context.
+Build and maintain a catalogue of AI tools, features, and techniques from external sources.
 
 ## Arguments
 
@@ -18,46 +18,29 @@ Parse from `$ARGUMENTS` if provided. Default to `--sources all --days 7`.
 
 ## Workflow
 
-### Step 1: Check/Create Catalogue Lists
+### Step 1: Load or Initialize Catalogue
 
-Check if the ai-brain MCP tools are available (try calling `get_lists`).
+Read `~/.claude/radar/catalogue.json`. If it doesn't exist:
 
-**If brain MCP is available:**
-
-Call `get_lists` and look for lists with names starting with `[Radar]`. Create any that are missing:
-- `[Radar] Inbox` — raw links dropped by user for enrichment
-- `[Radar] Claude Code` — features, settings, tips
-- `[Radar] MCP Ecosystem` — servers, plugins, integrations
-- `[Radar] AI Tools & Techniques` — broader tools, prompting, workflows
-
-Use `create_list` for each missing list.
-
-**If brain MCP is unavailable:**
-
-Use local JSON file at `~/.claude/radar-catalogue.json`. Read it if it exists, or initialize with empty structure.
-
-If `~/.claude/radar-catalogue.json` does not exist but `~/.claude/scout-catalogue.json` does, rename `~/.claude/scout-catalogue.json` to `~/.claude/radar-catalogue.json` and use it.
+1. Check for legacy paths and migrate if found:
+   - `~/.claude/radar-catalogue.json` → move to `~/.claude/radar/catalogue.json`
+   - `~/.claude/scout-catalogue.json` → move to `~/.claude/radar/catalogue.json`
+2. If no legacy file exists, initialize with empty structure:
 
 ```json
 {
-  "lists": {
-    "[Radar] Inbox": { "items": [] },
-    "[Radar] Claude Code": { "items": [] },
-    "[Radar] MCP Ecosystem": { "items": [] },
-    "[Radar] AI Tools & Techniques": { "items": [] }
-  },
-  "lastUpdated": null
+  "version": "1.0",
+  "updatedAt": null,
+  "items": [],
+  "insights": []
 }
 ```
 
-### Step 2: Load Existing Catalogue
+Create the `~/.claude/radar/` directory if it doesn't exist.
 
-Load all items from `[Radar]` lists to build a set of known URLs for deduplication.
+Build a set of known URLs from existing items for deduplication.
 
-**Brain mode:** Call `get_list` for each `[Radar]` list. Collect all item URLs into a set.
-**Local mode:** Read from the JSON file.
-
-### Step 2.5: Scan Project Dependencies
+### Step 2: Scan Project Dependencies
 
 Run `node "${CLAUDE_PLUGIN_ROOT}/bin/workflow-analyzer/dist/cli.js" scan-deps --since ${DAYS} --output /tmp/workflow-analyzer-deps.json`. Read the output JSON. If the bundled binary is not available, fall back to `npx @flippyhead/workflow-analyzer@latest scan-deps --since ${DAYS} --output /tmp/workflow-analyzer-deps.json`.
 
@@ -69,7 +52,7 @@ For each entry in the `releases` array:
 1. Read the `release.body` (release notes) and `repoDescription` to assess relevance
 2. **Skip** routine releases: patch version bumps, typo fixes, minor dep updates, internal refactors, CI/CD changes, documentation-only releases
 3. **Catalogue** interesting releases: new CLI tools, MCP servers/integrations, AI/agent features, breaking changes, significant new APIs, performance improvements
-4. Create catalogue items using the standard enrichment from Step 5, with `source: "dependency-changelog"` and an additional `relevanceHint` of `"direct dependency"`
+4. Create catalogue items using the standard enrichment from Step 5, with `source: "dependency"` and tag `"direct-dependency"`
 5. Use the `release.url` as the item URL for deduplication against existing catalogue
 
 ### Step 3: Scan Structured Sources
@@ -109,30 +92,38 @@ For each result across all sources: skip if the URL already exists in the catalo
 
 Also deduplicate across sources within this run — if the same URL was found by both HN and GitHub in this run, only catalogue it once.
 
-### Step 4: Process Inbox Items
+### Step 4: Process Manual Inbox Items
 
 Skip this step if `--sources feeds` was specified.
 
-**Brain mode:** Call `get_list` for the `[Radar] Inbox` list. For each item with status "open":
+Look for items in the catalogue with `source: "manual"` and `status: "new"`. For each:
 
 1. If the item has a URL, use `WebFetch` to get the page content
-2. Summarize what it is and why it might be useful (1-2 sentences) — set as `description`
+2. Summarize what it is and why it might be useful (1-2 sentences) — update `description`
 3. Classify it (see Step 5 for category/tag schema)
-4. Create a new item in the appropriate `[Radar]` category list using `create_list_item` with the enriched fields
-5. Mark the inbox item as "done" using `update_list_item`
-
-**Local mode:** Process items in the Inbox array, move to the appropriate category array.
+4. Update category and tags on the existing item
+5. Set `status: "reviewed"` and `reviewedAt` to now
 
 ### Step 5: Enrich and Tag
 
-For each new catalogue entry (from Step 3 or Step 4), set the `properties` field:
+For each new catalogue entry (from Step 2 or Step 3), create an item object:
 
 ```json
 {
+  "id": "<first 12 chars of SHA-256 hash of the URL>",
+  "title": "...",
+  "url": "...",
+  "description": "1-2 sentence summary",
   "category": "<one of: claude-code, mcp, api, agent-sdk, prompting, tooling, workflow, general-ai>",
-  "relevanceHints": ["<free-text tags describing what workflows/goals this helps with>"],
-  "source": "<one of: anthropic-changelog, hackernews, github, youtube, manual, dependency-changelog>",
-  "discoveredAt": "<ISO date>"
+  "tags": ["<free-text tags describing what workflows/goals this helps with>"],
+  "source": "<one of: anthropic, hackernews, github, youtube, manual, dependency>",
+  "discoveredAt": "<ISO date>",
+  "status": "new",
+  "notes": [],
+  "score": null,
+  "scoreBreakdown": null,
+  "reviewedAt": null,
+  "lastRecommended": null
 }
 ```
 
@@ -146,16 +137,13 @@ Choose category based on the content:
 - `workflow` — Workflow patterns, automation techniques, productivity methods
 - `general-ai` — Broader AI developments, models, research
 
-Choose `relevanceHints` based on what kinds of work this would help with (e.g., "browser automation", "code review", "testing", "deployment", "project management").
-
-**Brain mode:** Use `create_list_item` with url, description, and properties set.
-**Local mode:** Append to the appropriate list in the JSON file. Write the file when done.
+Append each new item to the catalogue's `items` array. Update `updatedAt` to now. Write the catalogue back to `~/.claude/radar/catalogue.json`.
 
 ### Step 6: Report
 
-Output a brief summary:
+Output a brief terminal summary:
 - How many new items were catalogued, by source
 - How many inbox items were processed
 - How many duplicates were skipped
 - The 3-5 most notable new finds (title + one-line description)
-- Total catalogue size across all `[Radar]` lists
+- Total catalogue size
