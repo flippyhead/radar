@@ -4,10 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-A plugin marketplace repo shipping two plugins. Published as `flippyhead/radar`.
+A Claude Code plugin for AI workflow intelligence. Published as `flippyhead/radar`.
 
-- **Radar** — AI workflow intelligence. Analyzes coding sessions, scans the ecosystem, recommends improvements.
-- **Open Brain** — Persistent AI memory. Lists, thoughts, project sync, weekly reviews. Powered by [Open Brain](https://ai-brain-pi.vercel.app).
+**Radar** analyzes your coding sessions, scans the AI ecosystem, and recommends tools and techniques that match your actual usage patterns. All data stays local in `~/.claude/radar/catalogue.json`.
 
 ## Repo Structure
 
@@ -16,7 +15,6 @@ A plugin marketplace repo shipping two plugins. Published as `flippyhead/radar`.
 plugins/
   radar/                 — workflow intelligence plugin
     .claude-plugin/      — per-plugin plugin.json
-    .mcp.json            — MCP server config (ai-brain HTTP connector, optional)
     bin/
       workflow-analyzer/ — bundled CLI (source + compiled dist)
     hooks/               — hooks.json + install.mjs + first-run.mjs
@@ -25,7 +23,8 @@ plugins/
       radar-analyze/SKILL.md     — session analysis
       radar-scan/SKILL.md        — external source scanning
       radar-recommend/SKILL.md   — personalized recommendations
-  open-brain/            — persistent memory plugin
+      radar-review/SKILL.md      — catalogue review interface
+  open-brain/            — persistent memory plugin (separate, optional)
     .claude-plugin/      — per-plugin plugin.json
     .mcp.json            — MCP server config (ai-brain HTTP connector)
     hooks/               — hooks.json + check-brain-status.mjs (SessionStart hook)
@@ -58,20 +57,23 @@ Bump rules:
 
 **Skills** are SKILL.md files containing structured prompts with frontmatter (name, description, argument-hint). They define multi-step workflows that Claude executes at runtime. Skills are NOT code — they are instructions.
 
-**Brain-optional design:** All radar skills work without Open Brain connected. Brain adds persistence, cross-session history, and richer recommendations. Skills detect brain availability via a lightweight MCP call at the start and proceed in terminal-only mode if unavailable — no warnings.
+**Local-first design:** All radar skills persist data to `~/.claude/radar/catalogue.json`. No external services required. The catalogue JSON schema is stable and designed for future adapter plugins that can sync to external systems (Notion, Linear, etc.).
 
 **Hooks** are executable scripts (Node.js ESM) triggered by Claude Code lifecycle events. Each plugin owns its own hooks:
 - Radar: `first-run.mjs` detects first use and suggests `/radar-analyze`
 - Open Brain: `check-brain-status.mjs` checks if brain is empty and suggests `/brain-init`
 
-**MCP config** (`.mcp.json`) declares the Open Brain HTTP MCP server. Both plugins declare the same server URL (`https://ai-brain-pi.vercel.app/api/mcp`). Radar tolerates connection failure (terminal-only mode). Open Brain requires it.
+**MCP config** (`.mcp.json`): The Open Brain plugin declares the Open Brain HTTP MCP server (`https://ai-brain-pi.vercel.app/api/mcp`). Radar does not use MCP — all persistence is local.
 
 **Bundled tooling**: The workflow-analyzer CLI is bundled under `plugins/radar/bin/workflow-analyzer/`. Skills invoke it via `node "${CLAUDE_PLUGIN_ROOT}/bin/workflow-analyzer/dist/cli.js"`. Dependencies are installed by the PluginInstall hook. The tool is also published as `@flippyhead/workflow-analyzer` on npm (legacy distribution).
 
 ## Plugin Install Commands
 
 ```bash
+# Install from marketplace (recommended)
 /plugin marketplace add flippyhead/radar
 /plugin install radar@flippyhead/radar
+
+# Optional: persistent memory (separate plugin)
 /plugin install open-brain@flippyhead/radar
 ```
