@@ -21,11 +21,11 @@ async function checkFirstRun() {
   try {
     const home = homedir();
     const catalogueExists = await fileExists(
-      join(home, ".claude", "radar-catalogue.json")
+      join(home, ".claude", "radar", "catalogue.json")
     );
-    const legacyCatalogueExists = await fileExists(
-      join(home, ".claude", "scout-catalogue.json")
-    );
+    const legacyCatalogueExists =
+      (await fileExists(join(home, ".claude", "radar-catalogue.json"))) ||
+      (await fileExists(join(home, ".claude", "scout-catalogue.json")));
     const analysisOutputExists = await fileExists(
       "/tmp/workflow-analyzer-parsed.json"
     );
