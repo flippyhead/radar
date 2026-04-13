@@ -44,7 +44,7 @@ For each finding, respond with a JSON array of insights:
 - severity: "suggestion"
 - title: short description of what to save
 - observation: what pattern was detected
-- action: { type: "save", content: "consolidated summary of what to save", destination: "AI Brain — reference" }
+- action: { type: "save", content: "consolidated summary of what to save", destination: "CLAUDE.md or project memory" }
 - evidence: [{ sessions: ["session-ids"], metric: "how many times" }]
 - effort: "low", impact: "medium", confidence: 0.0-1.0
 - deduplicationKey: "nudge:{topic-hash}"

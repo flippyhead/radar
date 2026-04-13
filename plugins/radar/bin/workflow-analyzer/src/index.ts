@@ -8,7 +8,6 @@ export { KnowledgeNudgesAnalyzer } from "./analyzers/knowledge-nudges.js";
 export { ClaudeApiProvider } from "./llm/claude-api.js";
 export { ClaudeCodeRuntimeProvider } from "./llm/claude-code-runtime.js";
 export { MarkdownOutput } from "./outputs/markdown.js";
-export { AIBrainOutput } from "./outputs/ai-brain.js";
 export { loadConfig } from "./config-loader.js";
 export * from "./types/index.js";
 export type { Parser } from "./parsers/parser.interface.js";

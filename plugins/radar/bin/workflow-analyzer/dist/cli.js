@@ -13,7 +13,6 @@ import { KnowledgeNudgesAnalyzer } from "./analyzers/knowledge-nudges.js";
 import { ClaudeApiProvider } from "./llm/claude-api.js";
 import { ClaudeCodeRuntimeProvider } from "./llm/claude-code-runtime.js";
 import { MarkdownOutput } from "./outputs/markdown.js";
-import { AIBrainOutput } from "./outputs/ai-brain.js";
 import { writeFile } from "fs/promises";
 const program = new Command();
 program
@@ -169,9 +168,6 @@ function buildOutputs(config) {
     const outputConfig = config.outputs;
     if (outputConfig["markdown"]?.enabled && outputConfig["markdown"].path) {
         outputs.push(new MarkdownOutput(outputConfig["markdown"].path));
-    }
-    if (outputConfig["ai-brain"]?.enabled && outputConfig["ai-brain"].endpoint) {
-        outputs.push(new AIBrainOutput(outputConfig["ai-brain"].endpoint));
     }
     return outputs;
 }

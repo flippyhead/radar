@@ -16,9 +16,6 @@ outputs:
   markdown:
     enabled: true
     path: "~/.workflow-analyzer/reports"
-  ai-brain:
-    enabled: false
-    endpoint: "http://localhost:3577"
 
 llm:
   provider: "claude-code-runtime"

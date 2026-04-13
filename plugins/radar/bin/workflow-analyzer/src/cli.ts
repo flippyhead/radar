@@ -14,7 +14,6 @@ import { KnowledgeNudgesAnalyzer } from "./analyzers/knowledge-nudges.js";
 import { ClaudeApiProvider } from "./llm/claude-api.js";
 import { ClaudeCodeRuntimeProvider } from "./llm/claude-code-runtime.js";
 import { MarkdownOutput } from "./outputs/markdown.js";
-import { AIBrainOutput } from "./outputs/ai-brain.js";
 import { Parser } from "./parsers/parser.interface.js";
 import { Analyzer } from "./analyzers/analyzer.interface.js";
 import { OutputTarget } from "./outputs/output.interface.js";
@@ -201,9 +200,6 @@ function buildOutputs(config: Config): OutputTarget[] {
 
   if (outputConfig["markdown"]?.enabled && outputConfig["markdown"].path) {
     outputs.push(new MarkdownOutput(outputConfig["markdown"].path));
-  }
-  if (outputConfig["ai-brain"]?.enabled && outputConfig["ai-brain"].endpoint) {
-    outputs.push(new AIBrainOutput(outputConfig["ai-brain"].endpoint));
   }
 
   return outputs;
