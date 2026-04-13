@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "ai-brain": {
-      "type": "http",
-      "url": "https://ai-brain-pi.vercel.app/api/mcp"
-    }
-  }
-}
