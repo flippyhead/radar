@@ -23,8 +23,10 @@ Parse from `$ARGUMENTS` if provided. Default to `--sources all --days 7`.
 Read `~/.claude/radar/catalogue.json`. If it doesn't exist:
 
 1. Check for legacy paths and migrate if found:
-   - `~/.claude/radar-catalogue.json` → move to `~/.claude/radar/catalogue.json`
-   - `~/.claude/scout-catalogue.json` → move to `~/.claude/radar/catalogue.json`
+   - `~/.claude/radar-catalogue.json` or `~/.claude/scout-catalogue.json`
+   - Read the legacy file. If it uses the old schema (`{ "lists": { "[Radar] ...": { "items": [...] } } }`), transform it: flatten all items from all lists into a single `items` array, map each item's fields to the new schema (add `id`, `status: "reviewed"`, `notes: []`, `score: null`, `scoreBreakdown: null`, `reviewedAt: null`, `lastRecommended: null`), and wrap in the new structure: `{ "version": "1.0", "updatedAt": "<now>", "items": [...], "insights": [] }`.
+   - If the legacy file already uses the new flat schema, move it directly.
+   - Write the result to `~/.claude/radar/catalogue.json`. Delete the legacy file after successful migration.
 2. If no legacy file exists, initialize with empty structure:
 
 ```json
