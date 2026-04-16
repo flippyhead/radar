@@ -60,8 +60,8 @@ export function formatMarkdownReport(
   const lines: string[] = [];
 
   // Header
-  const since = metadata.period.since.toISOString().split("T")[0];
-  const until = metadata.period.until.toISOString().split("T")[0];
+  const since = (typeof metadata.period.since === "string" ? metadata.period.since : metadata.period.since.toISOString()).split("T")[0];
+  const until = (typeof metadata.period.until === "string" ? metadata.period.until : metadata.period.until.toISOString()).split("T")[0];
   lines.push(`# Workflow Analysis Report`);
   lines.push("");
   lines.push(`**Period:** ${since} to ${until}`);

@@ -44,6 +44,16 @@ describe("formatMarkdownReport", () => {
     expect(md).toContain("cowork");
   });
 
+  it("handles string dates in period (from JSON.parse)", () => {
+    const stringMetadata = {
+      ...metadata,
+      period: { since: "2026-03-11T00:00:00.000Z", until: "2026-03-18T00:00:00.000Z" },
+    } as unknown as ReportMetadata;
+    const md = formatMarkdownReport([], stringMetadata);
+    expect(md).toContain("2026-03-11");
+    expect(md).toContain("2026-03-18");
+  });
+
   it("formats install actions with content", () => {
     const insights = [
       makeInsight({
