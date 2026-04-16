@@ -10,7 +10,7 @@
     {
       "name": "radar",
       "description": "Analyzes your coding sessions, scans the AI ecosystem, and recommends tools and techniques that match your workflow. All data stays local.",
-      "version": "4.0.1",
+      "version": "4.0.2",
       "author": {
         "name": "Peter Brown"
       },

@@ -35,9 +35,15 @@ Execute the full `/radar-recommend` workflow with the `--days` and `--focus` arg
 
 This phase uses the freshly updated catalogue from Phase 1, ensuring recommendations reflect the latest scan.
 
+### Phase 3: Review
+
+Execute the `/radar-review` workflow with `--status new`. This lets the user immediately act on freshly scanned and scored items — star the good ones, dismiss noise, add notes.
+
+If there are no new items to review (everything was already reviewed), skip this phase and note: "No new items to review."
+
 ### Summary
 
-Output a combined summary:
+After the review session ends (user says "done" or moves on), output a combined summary:
 - Scan: how many new items catalogued, by source
 - Recommendations: top "Act Now" items
-- Tip: "Run `/radar-review` to browse and manage your catalogue."
+- Review: items starred, dismissed, noted this session

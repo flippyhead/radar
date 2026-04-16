@@ -1,7 +1,7 @@
 {
   "name": "radar",
   "description": "Your AI development radar — workflow intelligence for Claude Code",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "author": {
     "name": "Peter Brown",
     "url": "https://ptb.io"

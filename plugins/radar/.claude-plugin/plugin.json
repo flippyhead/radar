@@ -1,7 +1,7 @@
 {
   "name": "radar",
   "description": "AI workflow intelligence — analyzes your coding sessions, scans the ecosystem, and recommends improvements relevant to you.",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "author": {
     "name": "Peter Brown",
     "url": "https://ptb.io"
