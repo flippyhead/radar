@@ -101,11 +101,12 @@ export function formatMarkdownReport(
   return lines.join("\n");
 }
 
-function getWeekNumber(date: Date): string {
-  const start = new Date(date.getFullYear(), 0, 1);
-  const diff = date.getTime() - start.getTime();
+function getWeekNumber(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const start = new Date(d.getFullYear(), 0, 1);
+  const diff = d.getTime() - start.getTime();
   const week = Math.ceil((diff / (7 * 24 * 60 * 60 * 1000) + start.getDay() + 1) / 7);
-  return `${date.getFullYear()}-W${String(week).padStart(2, "0")}`;
+  return `${d.getFullYear()}-W${String(week).padStart(2, "0")}`;
 }
 
 export class MarkdownOutput implements OutputTarget {
