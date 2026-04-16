@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { formatMarkdownReport } from "../../src/outputs/markdown.js";
+import { formatMarkdownReport, MarkdownOutput } from "../../src/outputs/markdown.js";
 import { Insight, ReportMetadata } from "../../src/types/insight.js";
+import { mkdtempSync, rmSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
 
 function makeInsight(overrides: Partial<Insight> = {}): Insight {
   return {
@@ -42,6 +45,31 @@ describe("formatMarkdownReport", () => {
     expect(md).toContain("42 sessions");
     expect(md).toContain("claude-code");
     expect(md).toContain("cowork");
+  });
+
+  it("handles string dates in period (from JSON.parse)", () => {
+    const stringMetadata = {
+      ...metadata,
+      period: { since: "2026-03-11T00:00:00.000Z", until: "2026-03-18T00:00:00.000Z" },
+    } as unknown as ReportMetadata;
+    const md = formatMarkdownReport([], stringMetadata);
+    expect(md).toContain("2026-03-11");
+    expect(md).toContain("2026-03-18");
+  });
+
+  it("publish handles string dates in getWeekNumber (from JSON.parse)", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "markdown-test-"));
+    try {
+      const stringMetadata = {
+        ...metadata,
+        period: { since: "2026-03-11T00:00:00.000Z", until: "2026-03-18T00:00:00.000Z" },
+      } as unknown as ReportMetadata;
+      const output = new MarkdownOutput(dir);
+      // Should not throw — previously crashed calling .getFullYear() on a string
+      await output.publish([], stringMetadata);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   it("formats install actions with content", () => {

@@ -8,6 +8,8 @@ argument-hint: [--status <new|starred|all>] [--since <date>] [--category <name>]
 
 Browse and manage your radar catalogue through conversation. Star items worth pursuing, dismiss noise, add notes, and filter by date, status, or category.
 
+**This skill is self-contained — it does not depend on or use the Open Brain plugin, ai-brain MCP, or any external memory service. All data comes from local files.**
+
 ## Arguments
 
 - `$ARGUMENTS` — Optional:

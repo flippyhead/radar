@@ -8,6 +8,8 @@ argument-hint: [--sources <all|feeds|manual>] [--days N]
 
 Build and maintain a catalogue of AI tools, features, and techniques from external sources.
 
+**This skill is self-contained — it does not depend on or use the Open Brain plugin, ai-brain MCP, or any external memory service.**
+
 ## Arguments
 
 - `$ARGUMENTS` — Optional:

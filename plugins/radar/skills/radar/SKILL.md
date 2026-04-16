@@ -8,6 +8,8 @@ argument-hint: [--days N] [--sources <all|feeds|manual>] [--focus <category>]
 
 Combined scan + recommend pipeline. Scans external sources for new AI tools and techniques, then matches them against your usage patterns to surface personalized recommendations.
 
+**This skill is self-contained — it does not depend on or use the Open Brain plugin, ai-brain MCP, or any external memory service.**
+
 This is the default entry point. Use `/radar-scan` or `/radar-recommend` separately if you need different scheduling cadences (e.g., scan daily, recommend weekly).
 
 ## Arguments

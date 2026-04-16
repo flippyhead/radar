@@ -10,6 +10,8 @@ Analyze recent Claude Code and Cowork sessions to generate actionable workflow i
 
 Uses the bundled workflow-analyzer for session parsing and enrichment. Claude does the reasoning.
 
+**This skill is self-contained — it does not depend on or use the Open Brain plugin, ai-brain MCP, or any external memory service. All data comes from local files.**
+
 ## Arguments
 
 - `$ARGUMENTS` — Optional:

@@ -8,6 +8,8 @@ argument-hint: [--days N] [--focus <category>]
 
 Match the catalogue against your personal context — usage patterns, current projects, and installed tools — to surface what you should be paying attention to.
 
+**This skill is self-contained — it does not depend on or use the Open Brain plugin, ai-brain MCP, or any external memory service. All data comes from local files.**
+
 ## Arguments
 
 - `$ARGUMENTS` — Optional:

@@ -52,8 +52,8 @@ function formatInsight(insight) {
 export function formatMarkdownReport(insights, metadata) {
     const lines = [];
     // Header
-    const since = metadata.period.since.toISOString().split("T")[0];
-    const until = metadata.period.until.toISOString().split("T")[0];
+    const since = (typeof metadata.period.since === "string" ? metadata.period.since : metadata.period.since.toISOString()).split("T")[0];
+    const until = (typeof metadata.period.until === "string" ? metadata.period.until : metadata.period.until.toISOString()).split("T")[0];
     lines.push(`# Workflow Analysis Report`);
     lines.push("");
     lines.push(`**Period:** ${since} to ${until}`);
@@ -86,10 +86,11 @@ export function formatMarkdownReport(insights, metadata) {
     return lines.join("\n");
 }
 function getWeekNumber(date) {
-    const start = new Date(date.getFullYear(), 0, 1);
-    const diff = date.getTime() - start.getTime();
+    const d = typeof date === "string" ? new Date(date) : date;
+    const start = new Date(d.getFullYear(), 0, 1);
+    const diff = d.getTime() - start.getTime();
     const week = Math.ceil((diff / (7 * 24 * 60 * 60 * 1000) + start.getDay() + 1) / 7);
-    return `${date.getFullYear()}-W${String(week).padStart(2, "0")}`;
+    return `${d.getFullYear()}-W${String(week).padStart(2, "0")}`;
 }
 export class MarkdownOutput {
     name = "markdown";
