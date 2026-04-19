@@ -6,7 +6,7 @@
 
 ## 1. Brain cleanup (separate repo, separate PR)
 
-**Repo:** `/Users/peterbrown/Development/ai-brain` (not this repo)
+**Repo:** the separate `ai-brain` repo (not this repo)
 
 **Why:** The `/workflow-analyst` slash command that populated Brain's insights/reports tables is gone. The Brain `/insights` page and its Convex backend are now dead code. Radar stands alone; Brain is general-purpose memory only.
 
