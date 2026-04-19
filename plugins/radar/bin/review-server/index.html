@@ -204,6 +204,8 @@
   <button class="primary" id="doneBtn">Done</button>
 </header>
 
+<div class="error-banner" id="errorBanner"></div>
+
 <div class="filters">
   <div class="filter-group">
     <span class="filter-label">Status</span>
@@ -284,8 +286,7 @@ function tierOf(item) {
   if (s == null) return 'unscored';
   if (s >= 7) return 'act';
   if (s >= 5) return 'explore';
-  if (s >= 3) return 'radar';
-  return 'unscored';
+  return 'radar';
 }
 
 function sourceKey(item) {
@@ -359,7 +360,9 @@ function renderCard(item) {
   const resolved = ['dismissed', 'acted-on'].includes(item.status);
   const cls = resolved ? 'card resolved' : 'card';
 
-  const tags = (item.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+  const tags = (item.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
+  const safeUrl = isSafeUrl(item.url) ? item.url : '#';
+  const urlLabel = escapeHtml((item.url || '').replace(/^https?:\/\//, ''));
   const br = item.scoreBreakdown;
   const breakdown = br ? `
     <details class="extra">
@@ -388,16 +391,16 @@ function renderCard(item) {
       <div class="row title-row">
         <div class="score ${scoreClass}">${scoreText}</div>
         <div class="title">${escapeHtml(item.title)}</div>
-        <span class="source">${item.source}</span>
+        <span class="source">${escapeHtml(item.source || '')}</span>
         <span class="date">${relDate(item.discoveredAt)}</span>
       </div>
       <div class="meta-row">
-        <span class="badge cat-${item.category}">${item.category}</span>
-        ${item.status !== 'new' ? `<span class="tag">${item.status}</span>` : ''}
+        <span class="badge cat-${escapeHtml(item.category || '')}">${escapeHtml(item.category || '')}</span>
+        ${item.status !== 'new' ? `<span class="tag">${escapeHtml(item.status)}</span>` : ''}
       </div>
       <div class="desc">${escapeHtml(item.description || '(no description)')}</div>
       <div class="meta-row">
-        <a class="url-chip" href="${item.url}" target="_blank" rel="noopener">${item.url.replace(/^https?:\/\//,'')}</a>
+        <a class="url-chip" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener">${urlLabel}</a>
         <div class="tags">${tags}</div>
       </div>
       ${breakdown}
@@ -497,7 +500,14 @@ async function finishSession() {
   document.body.appendChild(msg);
 }
 
-function escapeHtml(s) { return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeHtml(s) { return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function isSafeUrl(u) {
+  if (typeof u !== 'string' || !u) return false;
+  try {
+    const parsed = new URL(u);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch { return false; }
+}
 
 document.getElementById('doneBtn').onclick = finishSession;
 loadCatalogue();

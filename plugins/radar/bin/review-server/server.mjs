@@ -80,14 +80,23 @@ const server = createServer(async (req, res) => {
       if (!item) return json(res, 404, { error: "not found" });
 
       const now = new Date().toISOString();
+      const ALLOWED_STATUSES = new Set([
+        "new", "starred", "reviewed", "dismissed", "acted-on",
+      ]);
 
-      if (patch.status && patch.status !== item.status) {
-        item.status = patch.status;
-        item.reviewedAt = now;
-        if (patch.status === "starred") session.starred++;
-        else if (patch.status === "dismissed") session.dismissed++;
-        else if (patch.status === "reviewed") session.reviewed++;
-        else if (patch.status === "acted-on") session.actedOn++;
+      if (patch.status !== undefined) {
+        if (!ALLOWED_STATUSES.has(patch.status)) {
+          return json(res, 400, { error: `invalid status: ${patch.status}` });
+        }
+        if (patch.status !== item.status) {
+          item.status = patch.status;
+          // Per schema, `new` items have reviewedAt: null
+          item.reviewedAt = patch.status === "new" ? null : now;
+          if (patch.status === "starred") session.starred++;
+          else if (patch.status === "dismissed") session.dismissed++;
+          else if (patch.status === "reviewed") session.reviewed++;
+          else if (patch.status === "acted-on") session.actedOn++;
+        }
       }
 
       if (patch.note && typeof patch.note === "string" && patch.note.trim()) {
