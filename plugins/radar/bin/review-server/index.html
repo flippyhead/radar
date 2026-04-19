@@ -231,7 +231,7 @@
     <span class="chip" data-filter="source" data-value="hackernews">HN</span>
     <span class="chip" data-filter="source" data-value="github">GitHub</span>
     <span class="chip" data-filter="source" data-value="dependency">Deps</span>
-    <span class="chip" data-filter="source" data-value="news">News</span>
+    <span class="chip" data-filter="source" data-value="youtube">YouTube</span>
   </div>
 </div>
 
@@ -275,7 +275,6 @@ let state = {
   status: 'all',
   tier: 'all',
   source: 'all',
-  expanded: new Set(),
   dismissOpen: new Set(),
   noteOpen: new Set(),
   dismissSelections: {},
@@ -356,7 +355,7 @@ function render() {
 function renderCard(item) {
   const sc = item.score;
   const scoreClass = sc == null ? 's-none' : sc >= 7 ? 's-high' : sc >= 5 ? 's-mid' : 's-low';
-  const scoreText = sc == null ? '—' : sc;
+  const scoreText = sc == null ? '—' : escapeHtml(sc);
   const resolved = ['dismissed', 'acted-on'].includes(item.status);
 
   const tags = (item.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
@@ -366,12 +365,12 @@ function renderCard(item) {
   const br = item.scoreBreakdown;
   const breakdown = br ? `
     <details class="extra">
-      <summary>Score breakdown (${sc}/10)</summary>
+      <summary>Score breakdown (${escapeHtml(sc)}/10)</summary>
       <div class="breakdown">
-        <div class="row"><span class="label">Goal alignment</span><span>${br.goalAlignment}/3</span></div>
-        <div class="row"><span class="label">Usage gap</span><span>${br.usageGap}/3</span></div>
-        <div class="row"><span class="label">Recency</span><span>${br.recency}/2</span></div>
-        <div class="row"><span class="label">Effort/impact</span><span>${br.effort}/2</span></div>
+        <div class="row"><span class="label">Goal alignment</span><span>${escapeHtml(br.goalAlignment)}/3</span></div>
+        <div class="row"><span class="label">Usage gap</span><span>${escapeHtml(br.usageGap)}/3</span></div>
+        <div class="row"><span class="label">Recency</span><span>${escapeHtml(br.recency)}/2</span></div>
+        <div class="row"><span class="label">Effort/impact</span><span>${escapeHtml(br.effort)}/2</span></div>
       </div>
     </details>` : '';
 
