@@ -99,10 +99,32 @@ const server = createServer(async (req, res) => {
         }
       }
 
-      if (patch.note && typeof patch.note === "string" && patch.note.trim()) {
+      if (patch.note !== undefined && patch.note !== null) {
         item.notes = item.notes || [];
-        item.notes.push({ at: now, text: patch.note.trim() });
-        session.notesAdded++;
+        let entry = null;
+        if (typeof patch.note === "string" && patch.note.trim()) {
+          // Legacy path: "[tag] text" — parse tag back out if present, else store tag-less.
+          const trimmed = patch.note.trim();
+          const m = trimmed.match(/^\[([^\]]+)\]\s*(.*)$/);
+          entry = m
+            ? { at: now, tag: m[1].trim(), text: m[2].trimEnd() }
+            : { at: now, tag: null, text: trimmed };
+        } else if (typeof patch.note === "object" && patch.note !== null) {
+          const rawTag = typeof patch.note.tag === "string" ? patch.note.tag.trim() : "";
+          // trimEnd matches the legacy regex path so identical content stores identically.
+          const rawText = typeof patch.note.text === "string" ? patch.note.text.trimEnd() : "";
+          if (rawTag || rawText.trim()) {
+            entry = {
+              at: now,
+              tag: rawTag || null,
+              text: rawText,
+            };
+          }
+        }
+        if (entry) {
+          item.notes.push(entry);
+          session.notesAdded++;
+        }
       }
 
       saveCatalogue(cat);

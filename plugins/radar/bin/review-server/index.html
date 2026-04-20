@@ -165,6 +165,15 @@
   .note-item { padding: 6px 0; border-bottom: 1px solid var(--border); }
   .note-item:last-child { border-bottom: 0; }
   .note-date { font-size: 11px; color: var(--muted); margin-right: 8px; }
+  .note-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 1px 6px;
+    margin-right: 6px;
+    background: #fee2e2;
+    color: #991b1b;
+    border-radius: 10px;
+  }
 
   .dismiss-panel {
     margin-top: 10px; padding: 12px; background: #fef2f2; border: 1px solid #fecaca;
@@ -394,6 +403,9 @@ function renderCard(item) {
   const urlLabel = escapeHtml((item.url || '').replace(/^https?:\/\//, ''));
   const itemId = escapeHtml(item.id);
   const br = item.scoreBreakdown;
+  const negPriorRow = (br && br.negativePrior != null && br.negativePrior !== 0)
+    ? `<div class="row"><span class="label">Dismissal penalty</span><span>${escapeHtml(br.negativePrior)}</span></div>`
+    : '';
   const breakdown = br ? `
     <details class="extra">
       <summary>Score breakdown (${escapeHtml(sc)}/10)</summary>
@@ -402,6 +414,7 @@ function renderCard(item) {
         <div class="row"><span class="label">Usage gap</span><span>${escapeHtml(br.usageGap)}/3</span></div>
         <div class="row"><span class="label">Recency</span><span>${escapeHtml(br.recency)}/2</span></div>
         <div class="row"><span class="label">Effort/impact</span><span>${escapeHtml(br.effort)}/2</span></div>
+        ${negPriorRow}
       </div>
     </details>` : '';
 
@@ -409,7 +422,13 @@ function renderCard(item) {
     <details class="extra">
       <summary>${item.notes.length} note${item.notes.length===1?'':'s'}</summary>
       <div class="notes">
-        ${item.notes.map(n => `<div class="note-item"><span class="note-date">${relDate(n.at)}</span>${escapeHtml(n.text)}</div>`).join('')}
+        ${item.notes.map(n => {
+        const tagChip = n.tag
+          ? `<span class="note-tag">${escapeHtml(n.tag)}</span>`
+          : '';
+        const bodyText = n.text || '';
+        return `<div class="note-item"><span class="note-date">${relDate(n.at)}</span>${tagChip}${escapeHtml(bodyText)}</div>`;
+      }).join('')}
       </div>
     </details>` : '';
 
@@ -503,12 +522,18 @@ function updateNoteText(id, t)    { state.dismissSelections[id+':note'] = {text:
 async function confirmDismiss(id) {
   const sel = state.dismissSelections[id] || {};
   if (!sel.tag) return;
-  const body = { status: 'dismissed' };
-  const noteText = `[${sel.tag}] ${sel.text||''}`.trim();
-  if (noteText) body.note = noteText;
   try {
-    await patchItem(id, body);
-  } catch { return; }
+    await patchItem(id, {
+      status: 'dismissed',
+      note: { tag: sel.tag, text: (sel.text || '').trim() },
+    });
+  } catch {
+    // patchItem's api() already surfaced the error via showError(). Return
+    // early so the dismiss panel stays open with the user's selection intact
+    // for retry — and so the rejection doesn't escape this async function
+    // and show up as an unhandled promise warning in the browser console.
+    return;
+  }
   delete state.dismissSelections[id];
   state.dismissOpen.delete(id);
   render();

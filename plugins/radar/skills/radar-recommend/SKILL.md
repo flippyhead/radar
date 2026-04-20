@@ -51,9 +51,25 @@ Read the output file. If session history exceeds 50 sessions, summarize the top 
 **User instructions (lightweight):**
 - Read `~/.claude/CLAUDE.md` if it exists — look for stated goals, priorities, or focus areas the user has written down. Do not prompt the user to add goals if none are found — just proceed without goal-based scoring.
 
+### Step 2.5: Build Dismissal-Pattern Summary
+
+Walk the full catalogue (not just the Step 1 filtered set) and collect every item where `status === "dismissed"` that has at least one note with a `tag` field. For items with multiple notes, use only the most recent note that has a non-excluded tag (compare by `at` timestamp; ties broken by array order).
+
+**Exclude the `save-for-later` tag.** It means "I want this but not now" — it is not a negative signal and must not feed into the negative prior. Treat `null` / missing tags as excluded too.
+
+From the remaining dismissed items, build a compact summary (aim for under 400 characters, hard cap 800):
+
+1. **Counts by tag** — `{ "not-relevant": 7, "already-installed": 3, "already-knew": 2, "wrong-score": 1 }`. Drop entries with count 0.
+2. **Up to 3 (category, tag) pairs by count** — e.g., `tooling × not-relevant (4)`, `mcp × already-installed (2)`. These are the strongest patterns.
+3. **Up to 5 representative reason snippets** — take the most recent non-empty `text` fields, truncate each to 60 chars. Format: `"[tag] text..."`. These give the scoring subagent concrete phrases to match against.
+
+If this qualifying set (dismissed items with a non-excluded tag) contains fewer than 3 items, skip the aggregation — there's not enough signal yet. When assembling the context payload in Step 3, set `dismissalPatterns: (none yet — fewer than 3 dismissals with tags)`.
+
+Append the summary to the **context payload** built in Step 3 under a new `dismissalPatterns:` key. Keep the rest of the payload structure unchanged so caching still works.
+
 ### Step 3: Score Each Item (dispatch to Haiku subagents)
 
-Build one shared **context payload** from Step 2 (session patterns, installed MCPs/plugins, CLAUDE.md goals). Keep it compact — aim for under ~1KB of plain text so it caches well across subagent calls. Assemble it once, reuse it for every item.
+Build one shared **context payload** from Steps 2 and 2.5 (session patterns, installed MCPs/plugins, CLAUDE.md goals, dismissalPatterns). Keep it compact — aim for under ~2KB of plain text so it caches well across subagent calls. The dismissalPatterns block is capped at 800 chars per Step 2.5, so the rest of the payload should fit comfortably in the remaining budget. Assemble it once, reuse it for every item.
 
 Then, for each catalogue item, dispatch a Haiku subagent to score it. Send multiple `Agent` tool calls in a single assistant turn so they run in parallel. Use:
 
@@ -70,11 +86,11 @@ Agent({
 
 **Subagent prompt template:**
 
-> You are scoring one catalogue item against a user's context. Return a single JSON object with keys `goalAlignment`, `usageGap`, `recency`, `effort`, `observation`, `recommendation`. No prose around the JSON.
+> You are scoring one catalogue item against a user's context. Return a single JSON object with keys `goalAlignment`, `usageGap`, `recency`, `effort`, `negativePrior`, `observation`, `recommendation`. No prose around the JSON.
 >
 > **User context:**
 > ```
-> <context payload: stated goals, active projects, top tools from session history, installed MCP servers/plugins, recurring prompt themes>
+> <context payload: stated goals, active projects, top tools from session history, installed MCP servers/plugins, recurring prompt themes, dismissalPatterns (counts by tag, top category×tag pairs, recent reason snippets)>
 > ```
 >
 > **Item:**
@@ -109,15 +125,24 @@ Agent({
 >   - 1: medium effort or medium impact
 >   - 0: high effort or low impact
 >
+> - `negativePrior` (-2 to 0):
+>   - -2: strong match to dismissal patterns — same category AND a tag or description phrase that directly echoes a dismissed reason (e.g., user dismissed 4 `tooling × not-relevant` items and this is another tooling item the user will likely dismiss)
+>   - -1: moderate match — same category as a frequently-dismissed combo, OR tags/description overlap with a recent dismissed reason (e.g., user dismissed 2 `general-ai` items as `already-knew` and this is another `general-ai` post covering familiar ground)
+>   - 0: no notable overlap with dismissal patterns
+>
 > - `observation` (string, ≤ 160 chars): one sentence citing the specific usage pattern, goal, or environment detail from the user context that makes this item relevant. Be concrete — reference an actual tool, project, or pattern from the context. No generic filler.
 >
 > - `recommendation` (string, ≤ 160 chars): one sentence with a concrete next step (install command, a specific feature to try, a config change). No "consider exploring" — say the action.
 >
 > Respond with ONLY the JSON object.
 
-**Once all subagents return,** the main loop computes `total = goalAlignment + usageGap + recency + effort`. If `lastRecommended` is within the last 14 days, subtract 2 from `total` (freshness penalty — do this in the main loop, not in the subagent). Skip items whose final `total < 3`.
+**Once all subagents return,** the main loop computes `total = goalAlignment + usageGap + recency + effort + negativePrior`. Because `negativePrior` ranges from -2 to 0, `total` can be as low as -2 and as high as 10. If `lastRecommended` is within the last 14 days, subtract an additional 2 from `total` (freshness penalty — do this in the main loop, not in the subagent). Skip items whose final `total < 3`.
 
-**If a subagent response is malformed** (unparseable JSON, scores out of range, missing fields), fall back to main-loop scoring for that item. Log a one-line warning: "Scoring fallback for <title>: <reason>".
+**Malformed `negativePrior`:** if the subagent omits `negativePrior` or returns a positive number, treat it as 0 (neutral) and log a one-line warning. Do NOT fall back to main-loop scoring just for this — the other rubric values are still usable.
+
+**If a subagent response is malformed** (unparseable JSON, or any *required* field missing / out of range), fall back to main-loop scoring for that item. Log a one-line warning: "Scoring fallback for <title>: <reason>".
+
+**Required fields** for fallback purposes are: `goalAlignment`, `usageGap`, `recency`, `effort`, `observation`, `recommendation`. `negativePrior` is explicitly **optional** — its absence is handled by the paragraph above and does not trigger fallback.
 
 ### Step 4: Present Recommendations
 
@@ -159,7 +184,7 @@ For items scoring 5+ (Act Now and Worth Exploring tiers), assemble one insight e
   "type": "recommendation",
   "observation": "<subagent observation>",
   "recommendation": "<subagent recommendation>",
-  "evidence": ["score breakdown: goal=N, gap=N, recency=N, effort=N, total=N"],
+  "evidence": ["score breakdown: goal=N, gap=N, recency=N, effort=N, negPrior=N, total=N"],
   "relatedItems": ["<item id>"],
   "createdAt": "<ISO date>",
   "status": "new"
@@ -173,7 +198,7 @@ For items scoring 5+ (Act Now and Worth Exploring tiers), assemble one insight e
 For each item that was recommended, update its properties:
 - `lastRecommended`: today's ISO date
 - `score`: the computed total score
-- `scoreBreakdown`: `{ "goalAlignment": N, "usageGap": N, "recency": N, "effort": N }`
+- `scoreBreakdown`: `{ "goalAlignment": N, "usageGap": N, "recency": N, "effort": N, "negativePrior": N }` (where `negativePrior` is 0, -1, or -2)
 
 Write the updated catalogue back to `~/.claude/radar/catalogue.json`.
 

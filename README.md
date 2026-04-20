@@ -90,7 +90,9 @@ Insights are categorized by module — **root cause diagnosis**, **direct automa
 
 ### Manage your catalogue
 
-Run `/radar-review` to browse discoveries and insights conversationally. Star things worth pursuing, dismiss noise, add notes, filter by status or category. Your catalogue grows smarter over time as Radar learns what you care about.
+Run `/radar-review` to browse discoveries and insights in a local web UI. Star things worth pursuing, dismiss noise, add notes, filter by status, tier, or source. When you dismiss an item, pick a reason tag — Radar reads those tags on the next `/radar-recommend` and down-weights items that match your dismissal patterns.
+
+![Radar review UI](docs/images/radar-review.png)
 
 ## How It Works
 
