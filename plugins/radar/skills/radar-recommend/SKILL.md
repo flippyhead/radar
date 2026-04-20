@@ -63,7 +63,7 @@ From the remaining dismissed items, build a compact summary (aim for under 400 c
 2. **Up to 3 (category, tag) pairs by count** — e.g., `tooling × not-relevant (4)`, `mcp × already-installed (2)`. These are the strongest patterns.
 3. **Up to 5 representative reason snippets** — take the most recent non-empty `text` fields, truncate each to 60 chars. Format: `"[tag] text..."`. These give the scoring subagent concrete phrases to match against.
 
-If the remaining dismissed items (after excluding `save-for-later` and missing tags) number fewer than 3, skip the aggregation — there's not enough signal yet. When assembling the context payload in Step 3, set `dismissalPatterns: (none yet — fewer than 3 dismissals with tags)`.
+If this qualifying set (dismissed items with a non-excluded tag) contains fewer than 3 items, skip the aggregation — there's not enough signal yet. When assembling the context payload in Step 3, set `dismissalPatterns: (none yet — fewer than 3 dismissals with tags)`.
 
 Append the summary to the **context payload** built in Step 3 under a new `dismissalPatterns:` key. Keep the rest of the payload structure unchanged so caching still works.
 

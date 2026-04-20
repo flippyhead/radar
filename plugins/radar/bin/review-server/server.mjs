@@ -110,12 +110,16 @@ const server = createServer(async (req, res) => {
           entry = m
             ? { at: now, tag: m[1].trim(), text: m[2].trimEnd() }
             : { at: now, tag: null, text: trimmed };
-        } else if (typeof patch.note === "object" && typeof patch.note.tag === "string" && patch.note.tag.trim()) {
-          entry = {
-            at: now,
-            tag: patch.note.tag.trim(),
-            text: typeof patch.note.text === "string" ? patch.note.text : "",
-          };
+        } else if (typeof patch.note === "object" && patch.note !== null) {
+          const rawTag = typeof patch.note.tag === "string" ? patch.note.tag.trim() : "";
+          const rawText = typeof patch.note.text === "string" ? patch.note.text : "";
+          if (rawTag || rawText) {
+            entry = {
+              at: now,
+              tag: rawTag || null,
+              text: rawText,
+            };
+          }
         }
         if (entry) {
           item.notes.push(entry);

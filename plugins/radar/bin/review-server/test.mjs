@@ -123,6 +123,35 @@ async function run() {
     assert.equal(item3.notes[0].text, '');
     console.log('OK: tag-only structured note stored');
 
+    // TEST 4: empty-tag structured note preserves the text as a tag-less note
+    it.status = 'new'; it.notes = []; it.reviewedAt = null;
+    writeFileSync(catPath, JSON.stringify(cat));
+    const r4 = await patch(url, 'test-item-1', {
+      status: 'dismissed',
+      note: { tag: '', text: 'text without a tag' },
+    });
+    assert.equal(r4.status, 200);
+    const cat4 = JSON.parse(readFileSync(catPath, 'utf8'));
+    const item4 = cat4.items.find((i) => i.id === 'test-item-1');
+    assert.equal(item4.notes.length, 1, 'empty-tag note still stored');
+    assert.equal(item4.notes[0].tag, null, 'tag normalized to null');
+    assert.equal(item4.notes[0].text, 'text without a tag', 'text preserved verbatim');
+    console.log('OK: empty-tag structured note stored as tag-less');
+
+    // TEST 5: fully blank structured note is dropped (no empty entry)
+    it.status = 'new'; it.notes = []; it.reviewedAt = null;
+    writeFileSync(catPath, JSON.stringify(cat));
+    const r5 = await patch(url, 'test-item-1', {
+      status: 'dismissed',
+      note: { tag: '', text: '' },
+    });
+    assert.equal(r5.status, 200);
+    const cat5 = JSON.parse(readFileSync(catPath, 'utf8'));
+    const item5 = cat5.items.find((i) => i.id === 'test-item-1');
+    assert.equal(item5.status, 'dismissed', 'status still updates even when note dropped');
+    assert.equal(item5.notes.length, 0, 'fully blank note not stored');
+    console.log('OK: fully blank structured note dropped cleanly');
+
     console.log('PASS');
   } finally {
     proc.kill();
