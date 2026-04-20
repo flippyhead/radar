@@ -82,9 +82,45 @@ async function run() {
     const item1 = cat1.items.find((i) => i.id === 'test-item-1');
     assert.equal(item1.status, 'dismissed');
     assert.equal(item1.notes.length, 1);
-    assert.equal(item1.notes[0].text, '[not-relevant] legacy string note');
+    assert.equal(item1.notes[0].tag, 'not-relevant');
+    assert.equal(item1.notes[0].text, 'legacy string note');
     assert.equal(typeof item1.notes[0].at, 'string');
     console.log('OK: legacy string note accepted and stored');
+
+    // Reset the item so the next test is clean
+    const cat = JSON.parse(readFileSync(catPath, 'utf8'));
+    const it = cat.items.find((i) => i.id === 'test-item-1');
+    it.status = 'new'; it.notes = []; it.reviewedAt = null;
+    writeFileSync(catPath, JSON.stringify(cat));
+
+    // TEST 2: structured {tag, text} note is accepted and persisted as {at, tag, text}
+    const r2 = await patch(url, 'test-item-1', {
+      status: 'dismissed',
+      note: { tag: 'already-installed', text: 'already have it' },
+    });
+    assert.equal(r2.status, 200, 'structured PATCH returns 200');
+    const cat2 = JSON.parse(readFileSync(catPath, 'utf8'));
+    const item2 = cat2.items.find((i) => i.id === 'test-item-1');
+    assert.equal(item2.status, 'dismissed');
+    assert.equal(item2.notes.length, 1, 'one note stored');
+    assert.equal(item2.notes[0].tag, 'already-installed', 'tag persisted as field');
+    assert.equal(item2.notes[0].text, 'already have it', 'text persisted separately');
+    assert.ok(item2.notes[0].at, 'at timestamp present');
+    console.log('OK: structured note accepted and stored as {at, tag, text}');
+
+    // TEST 3: structured note with empty text still stores the tag
+    it.status = 'new'; it.notes = []; it.reviewedAt = null;
+    writeFileSync(catPath, JSON.stringify(cat));
+    const r3 = await patch(url, 'test-item-1', {
+      status: 'dismissed',
+      note: { tag: 'not-relevant', text: '' },
+    });
+    assert.equal(r3.status, 200);
+    const cat3 = JSON.parse(readFileSync(catPath, 'utf8'));
+    const item3 = cat3.items.find((i) => i.id === 'test-item-1');
+    assert.equal(item3.notes.length, 1, 'tag-only note still stored');
+    assert.equal(item3.notes[0].tag, 'not-relevant');
+    assert.equal(item3.notes[0].text, '');
 
     console.log('PASS');
   } finally {

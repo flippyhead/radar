@@ -100,10 +100,27 @@ const server = createServer(async (req, res) => {
         }
       }
 
-      if (patch.note && typeof patch.note === "string" && patch.note.trim()) {
+      if (patch.note !== undefined && patch.note !== null) {
         item.notes = item.notes || [];
-        item.notes.push({ at: now, text: patch.note.trim() });
-        session.notesAdded++;
+        let entry = null;
+        if (typeof patch.note === "string" && patch.note.trim()) {
+          // Legacy path: "[tag] text" — parse tag back out if present, else store tag-less.
+          const trimmed = patch.note.trim();
+          const m = trimmed.match(/^\[([^\]]+)\]\s*(.*)$/);
+          entry = m
+            ? { at: now, tag: m[1], text: m[2] }
+            : { at: now, tag: null, text: trimmed };
+        } else if (typeof patch.note === "object" && typeof patch.note.tag === "string") {
+          entry = {
+            at: now,
+            tag: patch.note.tag,
+            text: typeof patch.note.text === "string" ? patch.note.text : "",
+          };
+        }
+        if (entry) {
+          item.notes.push(entry);
+          session.notesAdded++;
+        }
       }
 
       saveCatalogue(cat);
