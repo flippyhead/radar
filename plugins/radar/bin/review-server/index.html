@@ -165,15 +165,15 @@
   .note-item { padding: 6px 0; border-bottom: 1px solid var(--border); }
   .note-item:last-child { border-bottom: 0; }
   .note-date { font-size: 11px; color: var(--muted); margin-right: 8px; }
-.note-tag {
-  display: inline-block;
-  font-size: 11px;
-  padding: 1px 6px;
-  margin-right: 6px;
-  background: #fee2e2;
-  color: #991b1b;
-  border-radius: 10px;
-}
+  .note-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 1px 6px;
+    margin-right: 6px;
+    background: #fee2e2;
+    color: #991b1b;
+    border-radius: 10px;
+  }
 
   .dismiss-panel {
     margin-top: 10px; padding: 12px; background: #fef2f2; border: 1px solid #fecaca;
@@ -518,6 +518,9 @@ function updateNoteText(id, t)    { state.dismissSelections[id+':note'] = {text:
 async function confirmDismiss(id) {
   const sel = state.dismissSelections[id] || {};
   if (!sel.tag) return;
+  // No try/catch: on server error, api() already calls showError() and
+  // the throw short-circuits the delete/render below so the dismiss panel
+  // stays open with the user's selection intact for retry.
   await patchItem(id, {
     status: 'dismissed',
     note: { tag: sel.tag, text: (sel.text || '').trim() },
