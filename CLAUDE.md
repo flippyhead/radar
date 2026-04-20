@@ -24,17 +24,13 @@ plugins/
       radar-scan/SKILL.md        — external source scanning
       radar-recommend/SKILL.md   — personalized recommendations
       radar-review/SKILL.md      — catalogue review interface
-  open-brain/            — persistent memory plugin (separate, optional)
-    .claude-plugin/      — per-plugin plugin.json
-    .mcp.json            — MCP server config (ai-brain HTTP connector)
-    hooks/               — hooks.json + check-brain-status.mjs (SessionStart hook)
-    skills/
-      brain-init/SKILL.md
-      brain-sync/SKILL.md
-      weekly-review/SKILL.md
 scripts/
   bump-version.sh        — updates version in all 3 locations
 ```
+
+## Former open-brain plugin
+
+The `open-brain` persistent-memory plugin formerly lived at `plugins/open-brain/`. It moved to `flippyhead/ai-brain-plugin` (distribution) sourced from `flippyhead/ai-brain` (monorepo). This repo is now radar-only.
 
 ## Version Management
 
@@ -59,11 +55,8 @@ Bump rules:
 
 **Local-first design:** All radar skills persist data to `~/.claude/radar/catalogue.json`. No external services required. The catalogue JSON schema is stable and designed for future adapter plugins that can sync to external systems (Notion, Linear, etc.).
 
-**Hooks** are executable scripts (Node.js ESM) triggered by Claude Code lifecycle events. Each plugin owns its own hooks:
+**Hooks** are executable scripts (Node.js ESM) triggered by Claude Code lifecycle events:
 - Radar: `first-run.mjs` detects first use and suggests `/radar-analyze`
-- Open Brain: `check-brain-status.mjs` checks if brain is empty and suggests `/brain-init`
-
-**MCP config** (`.mcp.json`): The Open Brain plugin declares the Open Brain HTTP MCP server (`https://ai-brain-pi.vercel.app/api/mcp`). Radar does not use MCP — all persistence is local.
 
 **Bundled tooling**: The workflow-analyzer CLI is bundled under `plugins/radar/bin/workflow-analyzer/`. Skills invoke it via `node "${CLAUDE_PLUGIN_ROOT}/bin/workflow-analyzer/dist/cli.js"`. Dependencies are installed by the PluginInstall hook. The tool is also published as `@flippyhead/workflow-analyzer` on npm (legacy distribution).
 
@@ -73,7 +66,4 @@ Bump rules:
 # Install from marketplace (recommended)
 /plugin marketplace add flippyhead/radar
 /plugin install radar@flippyhead/radar
-
-# Optional: persistent memory (separate plugin)
-/plugin install open-brain@flippyhead/radar
 ```

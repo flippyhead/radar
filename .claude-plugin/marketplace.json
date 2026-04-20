@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "radar",
-  "description": "Your AI development radar — workflow intelligence for Claude Code",
+  "description": "Your AI development radar — workflow intelligence for Claude Code and Cowork",
   "owner": {
     "name": "Peter Brown",
     "email": "peter@wagglelabs.com"
@@ -15,15 +15,6 @@
         "name": "Peter Brown"
       },
       "source": "./plugins/radar"
-    },
-    {
-      "name": "open-brain",
-      "description": "Persistent AI memory — save thoughts, track goals, sync projects, and get weekly reviews across all your sessions.",
-      "version": "2.0.1",
-      "author": {
-        "name": "Peter Brown"
-      },
-      "source": "./plugins/open-brain"
     }
   ]
 }

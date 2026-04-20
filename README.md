@@ -1,5 +1,7 @@
 # Radar
 
+> **Note:** The `open-brain` plugin formerly shipped from this marketplace has moved to its own distribution at [flippyhead/ai-brain-plugin](https://github.com/flippyhead/ai-brain-plugin). Install it from there: `/plugin marketplace add flippyhead/ai-brain-plugin`.
+
 Your AI development radar for Claude Code.
 
 The AI tooling landscape changes every week. New Claude Code features ship, your dependencies release major versions, MCP servers multiply, and frameworks you depend on pivot — all while you're heads-down shipping.
