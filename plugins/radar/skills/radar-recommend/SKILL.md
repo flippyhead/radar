@@ -66,6 +66,8 @@ Agent({
 })
 ```
 
+**Note (to the session model constructing the prompt):** do NOT include `lastRecommended` in the `Item:` block below. The main loop applies the freshness penalty itself, and exposing `lastRecommended` to Haiku risks the weaker model double-counting it inside the `recency` rubric (which is about *discovery* date only).
+
 **Subagent prompt template:**
 
 > You are scoring one catalogue item against a user's context. Return a single JSON object with keys `goalAlignment`, `usageGap`, `recency`, `effort`, `observation`, `recommendation`. No prose around the JSON.
@@ -82,8 +84,6 @@ Agent({
 > - Description: `<description>`
 > - Tags: `<tags joined by comma>`
 > - Discovered: `<discoveredAt>` (today is `<today>`)
->
-> Do NOT pass `lastRecommended` to the subagent — the main loop applies the freshness penalty itself, and including it here risks the weaker model double-counting it inside the `recency` rubric (which is about *discovery* date only).
 >
 > **Rubric — return integers in the stated range:**
 >

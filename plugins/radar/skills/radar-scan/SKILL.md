@@ -110,7 +110,9 @@ Look for items in the catalogue with `source: "manual"` and `status: "new"`. For
 
 ### Step 5: Enrich and Tag (dispatch to Haiku subagents)
 
-The main loop has now gathered a list of **candidates** — `{ title, url, source, discoveredAt, rawContext }` objects from Steps 2, 3, and 4. Triage (deciding whether something is worth cataloguing at all) has already happened in those steps. The work remaining — picking a category, generating tags, and writing a 1-2 sentence description — is formulaic and per-item, so dispatch it to Haiku subagents.
+The main loop has now gathered a list of **candidates** — `{ title, url, source, discoveredAt, rawContext }` objects from Step 2 (dependency releases) and Step 3 (structured sources). Triage (deciding whether something is worth cataloguing at all) has already happened in those steps. The work remaining — picking a category, generating tags, and writing a 1-2 sentence description — is formulaic and per-item, so dispatch it to Haiku subagents.
+
+(Step 4 handles a different case: it processes *existing* manual inbox items already in the catalogue, updating them in place. Step 4 can use the same subagent pattern if desired — same prompt template, same return shape — but the main loop writes the result back onto the existing item rather than creating a new one.)
 
 **For each candidate, dispatch one subagent call.** Send multiple `Agent` tool calls in a single assistant turn so they run in parallel. Use:
 
