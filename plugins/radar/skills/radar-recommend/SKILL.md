@@ -53,23 +53,23 @@ Read the output file. If session history exceeds 50 sessions, summarize the top 
 
 ### Step 2.5: Build Dismissal-Pattern Summary
 
-Walk the full catalogue (not just the Step 1 filtered set) and collect every item where `status === "dismissed"` that has at least one note with a `tag` field.
+Walk the full catalogue (not just the Step 1 filtered set) and collect every item where `status === "dismissed"` that has at least one note with a `tag` field. For items with multiple notes, use only the most recent note that has a non-excluded tag (compare by `at` timestamp; ties broken by array order).
 
 **Exclude the `save-for-later` tag.** It means "I want this but not now" — it is not a negative signal and must not feed into the negative prior. Treat `null` / missing tags as excluded too.
 
 From the remaining dismissed items, build a compact summary (aim for under 400 characters, hard cap 800):
 
 1. **Counts by tag** — `{ "not-relevant": 7, "already-installed": 3, "already-knew": 2, "wrong-score": 1 }`. Drop entries with count 0.
-2. **Top 3 (category, tag) pairs by count** — e.g., `tooling × not-relevant (4)`, `mcp × already-installed (2)`. These are the strongest patterns.
+2. **Up to 3 (category, tag) pairs by count** — e.g., `tooling × not-relevant (4)`, `mcp × already-installed (2)`. These are the strongest patterns.
 3. **Up to 5 representative reason snippets** — take the most recent non-empty `text` fields, truncate each to 60 chars. Format: `"[tag] text..."`. These give the scoring subagent concrete phrases to match against.
 
-If there are fewer than 3 dismissed items total, skip this step — there's not enough signal yet. Just note in the assembled context payload: `dismissalPatterns: (none yet — fewer than 3 dismissals with tags)`.
+If the remaining dismissed items (after excluding `save-for-later` and missing tags) number fewer than 3, skip the aggregation — there's not enough signal yet. When assembling the context payload in Step 3, set `dismissalPatterns: (none yet — fewer than 3 dismissals with tags)`.
 
 Append the summary to the **context payload** built in Step 3 under a new `dismissalPatterns:` key. Keep the rest of the payload structure unchanged so caching still works.
 
 ### Step 3: Score Each Item (dispatch to Haiku subagents)
 
-Build one shared **context payload** from Step 2 (session patterns, installed MCPs/plugins, CLAUDE.md goals). Keep it compact — aim for under ~1KB of plain text so it caches well across subagent calls. Assemble it once, reuse it for every item.
+Build one shared **context payload** from Steps 2 and 2.5 (session patterns, installed MCPs/plugins, CLAUDE.md goals, dismissalPatterns). Keep it compact — aim for under ~2KB of plain text so it caches well across subagent calls. The dismissalPatterns block is capped at 800 chars per Step 2.5, so the rest of the payload should fit comfortably in the remaining budget. Assemble it once, reuse it for every item.
 
 Then, for each catalogue item, dispatch a Haiku subagent to score it. Send multiple `Agent` tool calls in a single assistant turn so they run in parallel. Use:
 
@@ -127,7 +127,7 @@ Agent({
 >
 > - `negativePrior` (-2 to 0):
 >   - -2: strong match to dismissal patterns — same category AND a tag or description phrase that directly echoes a dismissed reason (e.g., user dismissed 4 `tooling × not-relevant` items and this is another tooling item the user will likely dismiss)
->   - -1: moderate match — same category as a frequently-dismissed combo, OR tags/description overlap with a recent dismissed reason
+>   - -1: moderate match — same category as a frequently-dismissed combo, OR tags/description overlap with a recent dismissed reason (e.g., user dismissed 2 `general-ai` items as `already-knew` and this is another `general-ai` post covering familiar ground)
 >   - 0: no notable overlap with dismissal patterns
 >
 > - `observation` (string, ≤ 160 chars): one sentence citing the specific usage pattern, goal, or environment detail from the user context that makes this item relevant. Be concrete — reference an actual tool, project, or pattern from the context. No generic filler.
