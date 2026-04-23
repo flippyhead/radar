@@ -1,6 +1,6 @@
 ---
 name: radar-scan
-description: Scan external sources for AI tools, features, and techniques. Builds a discovery catalogue from dependency changelogs, HN, GitHub, YouTube, and your inbox.
+description: Scan external sources for AI tools, features, and techniques. Builds a discovery catalogue from dependency changelogs, HN (targeted + firehose), GitHub, YouTube, a people-to-watch list, and your inbox.
 argument-hint: [--sources <all|feeds|manual>] [--days N]
 ---
 
@@ -70,13 +70,37 @@ When a source fails, print a clear one-line message: "Source [name] unavailable:
 **Anthropic changelog/blog:**
 Use `WebFetch` on `https://docs.anthropic.com/en/docs/about-claude/models` and `https://www.anthropic.com/news` to find recent releases and feature announcements. Extract title, URL, and a one-line description for each.
 
-**Hacker News:**
-Use `WebFetch` on the Algolia API:
+**Hacker News — targeted queries (5+ points):**
+Use `WebFetch` on the Algolia API. Extract title, URL (use `url` field, fall back to HN comment URL), and points. Keep items with 5+ points.
 - `https://hn.algolia.com/api/v1/search_by_date?query=claude+code&tags=story&numericFilters=created_at_i>${DAYS_AGO_TIMESTAMP}`
 - `https://hn.algolia.com/api/v1/search_by_date?query=anthropic+mcp&tags=story&numericFilters=created_at_i>${DAYS_AGO_TIMESTAMP}`
 - `https://hn.algolia.com/api/v1/search_by_date?query=ai+agent+tool&tags=story&numericFilters=created_at_i>${DAYS_AGO_TIMESTAMP}`
+- `https://hn.algolia.com/api/v1/search_by_date?query=llm+technique&tags=story&numericFilters=created_at_i>${DAYS_AGO_TIMESTAMP}`
+- `https://hn.algolia.com/api/v1/search_by_date?query=prompt+engineering&tags=story&numericFilters=created_at_i>${DAYS_AGO_TIMESTAMP}`
+- `https://hn.algolia.com/api/v1/search_by_date?query=%22show+hn%22+llm&tags=story&numericFilters=created_at_i>${DAYS_AGO_TIMESTAMP}`
 
-Extract title, URL (use `url` field, fall back to HN comment URL), and points as a quality signal. Only keep items with 5+ points.
+**Hacker News — firehose (high-point floor):**
+Safety net for high-signal AI stories that don't match targeted queries (e.g. a viral LLM technique gist). Pull broad AI stories with a point floor of 100+:
+- `https://hn.algolia.com/api/v1/search_by_date?query=llm&tags=story&numericFilters=created_at_i>${DAYS_AGO_TIMESTAMP},points>100`
+- `https://hn.algolia.com/api/v1/search_by_date?query=ai&tags=story&numericFilters=created_at_i>${DAYS_AGO_TIMESTAMP},points>100`
+
+Apply the same extraction as the targeted queries. Deduplicate by URL against the targeted-query results within this run.
+
+**People to Watch:**
+High-signal voices in the LLM/agent space whose work often surfaces new patterns before broader discovery. Scan their recent output directly, independent of keyword queries.
+
+Load the watchlist:
+1. Check for `~/.claude/radar/watchlist.json`. If present, use its `handles` array.
+2. Otherwise use this seed list: `["karpathy", "simonw", "jxnl", "hwchase17", "anthropics"]`.
+
+For each handle:
+1. `WebFetch` `https://gist.github.com/{handle}` — parse the page for recently published gists (title + URL + date). Skip if older than `${DAYS}` days.
+2. `WebFetch` `https://github.com/{handle}?tab=repositories&sort=updated` — parse for repos updated within `${DAYS}` days.
+3. `WebFetch` `https://hn.algolia.com/api/v1/search_by_date?query={handle}&tags=story&numericFilters=created_at_i>${DAYS_AGO_TIMESTAMP}` — stories mentioning the handle (1+ point; known names are already high-signal).
+
+Items discovered this way carry the natural `source` of their origin URL (`github` for gists/repos, `hackernews` for HN stories). Tag each with `"watchlist:{handle}"` so downstream filtering can trace the discovery path.
+
+If a handle returns no recent activity or a fetch fails, log one line and continue — never fail the run.
 
 **GitHub:**
 Use `WebSearch` for:
