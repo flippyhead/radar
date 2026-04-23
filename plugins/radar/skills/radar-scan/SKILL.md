@@ -63,7 +63,7 @@ For each entry in the `releases` array:
 
 Skip this step if `--sources manual` was specified.
 
-Limit to **10-15 items per source after dedup/merge**, where "per source" means: across all HN targeted queries combined, across all firehose queries combined, across all GitHub queries combined, across all YouTube queries combined, and across the entire watchlist loop combined (not per handle). When trimming to the cap: for HN, keep highest points; for repos/gists, keep most recently updated; for YouTube, keep most recent.
+Limit to **10-15 items per source after dedup/merge**, where "per source" means: across all Anthropic changelog/blog entries combined, across all HN targeted queries combined, across all firehose queries combined, across all GitHub queries combined, across all YouTube queries combined, and across the entire watchlist loop combined (not per handle). When trimming to the cap: for HN, keep highest points; for repos/gists, keep most recently updated; for YouTube and Anthropic, keep most recent.
 
 If a source fails (timeout, rate limit, format change), log a warning and continue to the next source — never fail the entire run.
 
@@ -136,7 +136,7 @@ Look for items in the catalogue with `source: "manual"` and `status: "new"`. For
 
 ### Step 5: Enrich and Tag (dispatch to Haiku subagents)
 
-The main loop has now gathered a list of **candidates** — `{ title, url, source, discoveredAt, rawContext }` objects from Step 2 (dependency releases) and Step 3 (structured sources). Triage (deciding whether something is worth cataloguing at all) has already happened in those steps. The work remaining — picking a category, generating tags, and writing a 1-2 sentence description — is formulaic and per-item, so dispatch it to Haiku subagents.
+The main loop has now gathered a list of **candidates** — `{ title, url, source, discoveredAt, rawContext, notes }` objects from Step 2 (dependency releases) and Step 3 (structured sources). The `notes` array carries any provenance accumulated during discovery (watchlist entries, dedup merge paths); it may be empty. Triage (deciding whether something is worth cataloguing at all) has already happened in those steps. The work remaining — picking a category, generating tags, and writing a 1-2 sentence description — is formulaic and per-item, so dispatch it to Haiku subagents.
 
 (Step 4 handles a different case: it processes *existing* manual inbox items already in the catalogue, updating them in place. Step 4 can use the same subagent pattern if desired — same prompt template, same return shape — but the main loop writes the result back onto the existing item rather than creating a new one.)
 
@@ -189,7 +189,7 @@ Agent({
   "source": "<one of: anthropic, hackernews, github, youtube, manual, dependency>",
   "discoveredAt": "<ISO date>",
   "status": "new",
-  "notes": [],
+  "notes": "<candidate.notes from Step 3 — provenance accumulated during discovery (watchlist entries, dedup merge paths), or [] if none>",
   "score": null,
   "scoreBreakdown": null,
   "reviewedAt": null,
